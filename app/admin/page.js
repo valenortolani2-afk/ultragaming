@@ -24,7 +24,7 @@ export default function Admin() {
           <h2>Falta configurar el panel</h2>
           <p>En Vercel, en tu proyecto, faltan estas variables:</p>
           <ul>{faltan.map(f => <li key={f}>{f}</li>)}</ul>
-          <p>Seguí los pasos de LEEME.md y volvé a publicar.</p>
+          <p>Configurá las variables indicadas en Vercel y volvé a desplegar el proyecto. Encontrás los pasos en el archivo LEEME.md, en la raíz del código.</p>
         </div>
       )}
     </main>

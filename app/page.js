@@ -5,6 +5,10 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import { consultar, garantia, instagram, marcas, whatsapp } from '../lib/contacto';
 import { productos } from '../lib/productos';
+import { listarPublicaciones } from '../lib/publicaciones';
+
+// Se arma en cada visita para mostrar al instante lo que se sube desde /admin
+export const dynamic = 'force-dynamic';
 import Nav from './Nav';
 import Vidriera from './Vidriera';
 import { FraseReveladora, Revelar } from './Revelar';
@@ -31,7 +35,9 @@ const preguntas = [
   ['¿Hacen servicio técnico?', 'Sí. Reparamos, limpiamos y actualizamos computadoras. Escribinos y te pasamos un presupuesto.']
 ];
 
-export default function Inicio() {
+export default async function Inicio() {
+  // Primero lo subido desde /admin (más nuevo arriba), después los productos fijos de lib/productos.js
+  const vidriera = [...await listarPublicaciones(), ...productos];
   return (
     <>
       <div className="franja">{garantia} de garantía en todos los productos · Envíos a todo el país</div>
@@ -59,7 +65,7 @@ export default function Inicio() {
           <div className="contenedor">
             <p className="etiqueta">Ofertas</p>
             <h2 className="titulo">Tocá un producto para ver todo</h2>
-            <Vidriera productos={productos} />
+            <Vidriera productos={vidriera} />
           </div>
         </section>
 

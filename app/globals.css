@@ -235,6 +235,33 @@ img { display: block; }
 .wa-flotante:hover { transform: translateY(-2px); }
 .wa-flotante:active { transform: scale(0.98); }
 
+/* Panel /admin */
+.admin { padding: 64px 0 96px; }
+.volver { display: inline-flex; align-items: center; gap: 8px; color: var(--gris); margin-bottom: 24px; }
+.volver:hover { color: var(--texto); }
+.subtitulo { font-size: 18px; line-height: 28px; margin-bottom: 16px; }
+.panel-admin { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.formulario, .aviso { display: grid; gap: 16px; padding: 24px; border-radius: 16px; background: var(--sup1); border: 1px solid var(--borde); }
+.formulario label { display: grid; gap: 8px; font-size: 14px; line-height: 20px; font-weight: 500; }
+.formulario input, .formulario select, .formulario textarea {
+  padding: 8px 12px; border-radius: 8px; border: 1px solid var(--borde2);
+  background: var(--sup2); color: var(--texto); font: inherit; font-size: 16px;
+}
+.formulario input:focus, .formulario select:focus, .formulario textarea:focus { outline: none; border-color: var(--azul); }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.nota { color: var(--gris); font-size: 14px; line-height: 20px; }
+.error { color: #ff6b4a; font-size: 14px; line-height: 20px; }
+.aviso h2 { font-size: 18px; line-height: 28px; }
+.aviso p, .aviso li { color: var(--gris); }
+.aviso ul { padding-left: 24px; }
+.lista-admin { list-style: none; display: grid; gap: 8px; }
+.lista-admin li { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; background: var(--sup1); border: 1px solid var(--borde); }
+.lista-admin img { width: 48px; height: 48px; object-fit: contain; background: #fff; border-radius: 4px; }
+.lista-admin div { flex: 1; min-width: 0; }
+.lista-admin h4 { font-size: 14px; line-height: 20px; font-weight: 500; }
+.lista-admin span { color: var(--gris); font-size: 12px; line-height: 16px; }
+@media (max-width: 960px) { .panel-admin { grid-template-columns: minmax(0, 1fr); } }
+
 /* Aparición al hacer scroll */
 .revelar { opacity: 0; transform: translateY(32px); transition: opacity 700ms var(--curva), transform 700ms var(--curva); }
 .revelar.visible { opacity: 1; transform: none; }

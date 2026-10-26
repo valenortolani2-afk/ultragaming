@@ -80,15 +80,15 @@ export default function Vidriera({ productos }) {
               <div className="garantia-caja">
                 <ShieldCheckIcon size={28} weight="fill" />
                 <div>
-                  <strong>Garantía de {garantia}</strong>
+                  <strong>Garantía de {elegido.garantia || garantia}</strong>
                   <span>Si falla, lo revisa nuestro servicio técnico y te lo resolvemos.</span>
                 </div>
               </div>
 
-              <p>{elegido.descripcion}</p>
-              <ul className="detalles">
+              {elegido.descripcion && <p className="ficha-descripcion">{elegido.descripcion}</p>}
+              {elegido.detalles?.length > 0 && <ul className="detalles">
                 {elegido.detalles.map(d => <li key={d}><CheckIcon size={16} weight="bold" /> {d}</li>)}
-              </ul>
+              </ul>}
 
               <div className="ficha-acciones">
                 <a className="btn btn-wa" target="_blank" rel="noopener noreferrer"

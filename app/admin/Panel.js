@@ -10,6 +10,7 @@ export default function Panel({ categorias, garantiaBase }) {
   const [categoria, setCategoria] = useState(categorias[0].slug);
   const [nombre, setNombre] = useState('');
   const [precio, setPrecio] = useState('');
+  const [costo, setCosto] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [garantia, setGarantia] = useState(garantiaBase);
   const [archivos, setArchivos] = useState([]);
@@ -17,17 +18,21 @@ export default function Panel({ categorias, garantiaBase }) {
   const [error, setError] = useState('');
   const [ocupado, setOcupado] = useState(false);
   const [lista, setLista] = useState(null);
+  // Contraseña con la que se pidió la lista: los costos solo llegan si es correcta
+  const [claveLista, setClaveLista] = useState('');
 
   // La contraseña se recuerda solo mientras la pestaña esté abierta
-  useEffect(() => { try { setClave(sessionStorage.getItem('clave-admin') || ''); } catch {} }, []);
+  useEffect(() => {
+    try { const c = sessionStorage.getItem('clave-admin') || ''; setClave(c); setClaveLista(c); } catch {}
+  }, []);
   useEffect(() => { try { sessionStorage.setItem('clave-admin', clave); } catch {} }, [clave]);
 
   async function cargarLista() {
     setLista(null);
-    const r = await fetch(`/api/publicaciones?categoria=${categoria}`);
+    const r = await fetch(`/api/publicaciones?categoria=${categoria}`, { headers: { 'x-clave': claveLista } });
     setLista(r.ok ? await r.json() : []);
   }
-  useEffect(() => { cargarLista(); }, [categoria]);
+  useEffect(() => { cargarLista(); }, [categoria, claveLista]);
 
   async function publicar(e) {
     e.preventDefault();
@@ -52,12 +57,12 @@ export default function Panel({ categorias, garantiaBase }) {
       const r = await fetch('/api/publicaciones', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clave, categoria, nombre, precio, descripcion, garantia, fotos })
+        body: JSON.stringify({ clave, categoria, nombre, precio, costo, descripcion, garantia, fotos })
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error);
       setEstado(`Publicado: ${data.nombre}`);
-      setNombre(''); setPrecio(''); setDescripcion(''); setGarantia(garantiaBase); setArchivos([]);
+      setNombre(''); setPrecio(''); setCosto(''); setDescripcion(''); setGarantia(garantiaBase); setArchivos([]);
       form.reset();
       cargarLista();
     } catch (err) {
@@ -87,7 +92,7 @@ export default function Panel({ categorias, garantiaBase }) {
     <div className="panel-admin">
       <form onSubmit={publicar} className="formulario">
         <label>Contraseña del panel
-          <input type="password" value={clave} onChange={e => setClave(e.target.value)} autoComplete="current-password" required />
+          <input type="password" value={clave} onChange={e => setClave(e.target.value)} onBlur={() => setClaveLista(clave)} autoComplete="current-password" required />
         </label>
         <label>Categoría
           <select value={categoria} onChange={e => setCategoria(e.target.value)}>
@@ -97,9 +102,15 @@ export default function Panel({ categorias, garantiaBase }) {
         <label>Título
           <input value={nombre} onChange={e => setNombre(e.target.value)} maxLength={120} placeholder="Ej: PC Ryzen 5 5600 + RTX 3060 12 GB" required />
         </label>
-        <label>Precio en pesos
+        <label>Precio de costo en pesos (solo lo ves vos)
+          <input type="number" min="0" step="1" inputMode="numeric" value={costo} onChange={e => setCosto(e.target.value)} placeholder="Ej: 650000" required />
+        </label>
+        <label>Precio de venta en pesos (se ve en la publicación)
           <input type="number" min="1" step="1" inputMode="numeric" value={precio} onChange={e => setPrecio(e.target.value)} placeholder="Ej: 850000" required />
         </label>
+        {costo !== '' && precio !== '' && (
+          <p className="nota">Ganancia: {pesos(Number(precio) - Number(costo))}</p>
+        )}
         <label>Garantía
           <input value={garantia} onChange={e => setGarantia(e.target.value)} maxLength={40} required />
         </label>
@@ -127,7 +138,10 @@ export default function Panel({ categorias, garantiaBase }) {
                 <img src={p.fotos[0]} alt="" />
                 <div>
                   <h4>{p.nombre}</h4>
-                  <span>{pesos(p.precio)} · Garantía {p.garantia} · {p.fotos.length} {p.fotos.length === 1 ? 'foto' : 'fotos'}</span>
+                  <span>
+                    Venta {pesos(p.precio)}
+                    {'costo' in p && (p.costo === null ? ' · Sin costo cargado' : ` · Costo ${pesos(p.costo)} · Ganancia ${pesos(p.precio - p.costo)}`)}
+                    {' '}· Garantía {p.garantia} · {p.fotos.length} {p.fotos.length === 1 ? 'foto' : 'fotos'}</span>
                 </div>
                 <button className="btn-icono" aria-label={`Borrar ${p.nombre}`} onClick={() => borrar(p)}><TrashIcon size={16} /></button>
               </li>

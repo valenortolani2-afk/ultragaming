@@ -7,14 +7,11 @@ import { consultar, garantia, pesos } from '../lib/contacto';
 
 const precioTexto = p => (p.desde ? 'Desde ' : '') + pesos(p.precio);
 
+// Grilla de publicaciones de una categoría. Al tocar una se abre su ficha.
 export default function Vidriera({ productos }) {
-  const [categoria, setCategoria] = useState('Todos');
   const [elegido, setElegido] = useState(null);
   const [fotoActiva, setFotoActiva] = useState(0);
   const ficha = useRef(null);
-
-  const categorias = ['Todos', ...new Set(productos.map(p => p.categoria))];
-  const lista = categoria === 'Todos' ? productos : productos.filter(p => p.categoria === categoria);
 
   // Al tocar una foto se abre la ficha con info, precio y garantía
   function abrir(p) {
@@ -26,16 +23,8 @@ export default function Vidriera({ productos }) {
 
   return (
     <>
-      <div className="filtros" role="group" aria-label="Categorías">
-        {categorias.map(c => (
-          <button key={c} className={'filtro' + (c === categoria ? ' activo' : '')} aria-pressed={c === categoria} onClick={() => setCategoria(c)}>
-            {c}
-          </button>
-        ))}
-      </div>
-
       <div className="vidriera">
-        {lista.map(p => (
+        {productos.map(p => (
           // En la tarjeta solo van la foto y el título; el resto se ve al tocarla
           <button key={p.id} className="tarjeta" onClick={() => abrir(p)} aria-haspopup="dialog" aria-label={`Ver ${p.nombre}`}>
             <Image src={p.fotos[0]} alt="" fill sizes="(max-width: 720px) 100vw, 400px" className="tarjeta-foto" />

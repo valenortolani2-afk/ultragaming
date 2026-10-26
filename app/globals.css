@@ -168,6 +168,7 @@ img { display: block; }
 .ficha-precio { font-size: 36px; line-height: 40px; font-weight: 700; }
 .ficha-precio small { display: block; color: var(--gris); font-size: 14px; line-height: 20px; font-weight: 500; }
 .ficha p { color: var(--gris); }
+.ficha-descripcion { white-space: pre-line; }
 .garantia-caja { display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-radius: 12px; background: var(--sup2); border: 1px solid var(--borde2); }
 .garantia-caja svg { flex: none; color: var(--verde); }
 .garantia-caja strong { display: block; }
@@ -235,6 +236,19 @@ img { display: block; }
 .wa-flotante:hover { transform: translateY(-2px); }
 .wa-flotante:active { transform: scale(0.98); }
 
+/* Página de cada categoría */
+.hero.cabecera-categoria { min-height: 480px; padding-top: 128px; }
+.cabecera-categoria h1 { font-size: 48px; line-height: 1; margin-bottom: 16px; }
+.nav-links-fijos a { display: inline-flex; align-items: center; gap: 8px; }
+.vacio {
+  display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
+  padding: 48px 24px; border-radius: 16px; background: var(--sup1); border: 1px solid var(--borde); color: var(--gris);
+}
+.vacio > svg { color: var(--texto); }
+.vacio h2 { color: var(--texto); font-size: 18px; line-height: 28px; }
+.vacio .btn { margin-top: 12px; }
+.otras { padding-top: 0; }
+
 /* Panel /admin */
 .admin { padding: 64px 0 96px; }
 .volver { display: inline-flex; align-items: center; gap: 8px; color: var(--gris); margin-bottom: 24px; }
@@ -274,7 +288,9 @@ img { display: block; }
 }
 @media (max-width: 720px) {
   .nav { gap: 16px; }
-  .nav-links { display: none; }
+  .nav-links:not(.nav-links-fijos) { display: none; }
+  .hero.cabecera-categoria { min-height: 400px; padding-top: 200px; }
+  .cabecera-categoria h1 { font-size: 36px; line-height: 40px; }
   .menu-btn { display: inline-grid; }
   .hero { min-height: 640px; padding: 320px 0 16px; }
   .hero-panel { padding: 24px 16px; }

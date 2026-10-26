@@ -1,16 +1,12 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   ChatsCircleIcon, HandPointingIcon, InstagramLogoIcon, PlusIcon, ShieldCheckIcon, StorefrontIcon,
   TruckIcon, WhatsappLogoIcon, WrenchIcon
 } from '@phosphor-icons/react/dist/ssr';
 import { consultar, garantia, instagram, marcas, whatsapp } from '../lib/contacto';
-import { productos } from '../lib/productos';
-import { listarPublicaciones } from '../lib/publicaciones';
-
-// Se arma en cada visita para mostrar al instante lo que se sube desde /admin
-export const dynamic = 'force-dynamic';
+import { categorias } from '../lib/categorias';
 import Nav from './Nav';
-import Vidriera from './Vidriera';
 import { FraseReveladora, Revelar } from './Revelar';
 
 const beneficios = [
@@ -35,9 +31,7 @@ const preguntas = [
   ['¿Hacen servicio técnico?', 'Sí. Reparamos, limpiamos y actualizamos computadoras. Escribinos y te pasamos un presupuesto.']
 ];
 
-export default async function Inicio() {
-  // Primero lo subido desde /admin (más nuevo arriba), después los productos fijos de lib/productos.js
-  const vidriera = [...await listarPublicaciones(), ...productos];
+export default function Inicio() {
   return (
     <>
       <div className="franja">{garantia} de garantía en todos los productos · Envíos a todo el país</div>
@@ -65,7 +59,15 @@ export default async function Inicio() {
           <div className="contenedor">
             <p className="etiqueta">Ofertas</p>
             <h2 className="titulo">Tocá un producto para ver todo</h2>
-            <Vidriera productos={vidriera} />
+            {/* Cada tarjeta lleva a la página con todas las publicaciones de esa categoría */}
+            <div className="vidriera">
+              {categorias.map(c => (
+                <Link key={c.slug} href={`/categoria/${c.slug}`} className="tarjeta">
+                  <Image src={c.foto} alt="" fill sizes="(max-width: 720px) 100vw, 400px" className="tarjeta-foto" />
+                  <span className="tarjeta-info"><strong>{c.titulo}</strong></span>
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
 

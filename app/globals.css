@@ -120,6 +120,7 @@ img { display: block; }
 .prueba svg { color: var(--verde); }
 
 /* Vidriera */
+#ofertas .titulo { margin-bottom: 32px; }
 .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
 .filtro {
   padding: 4px 12px; border-radius: 9999px; border: 1px solid var(--borde2); background: transparent;
@@ -144,16 +145,7 @@ img { display: block; }
   position: relative; display: grid; gap: 4px; padding: 12px; border-radius: 4px;
   background: rgba(5, 11, 20, .82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
-.tarjeta-info small { color: var(--gris); font-size: 12px; line-height: 16px; font-weight: 500; }
 .tarjeta-info strong { font-size: 16px; line-height: 24px; font-weight: 600; }
-.tarjeta-pie { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 4px; }
-.precio { font-size: 20px; line-height: 28px; font-weight: 700; }
-.ver { display: inline-flex; align-items: center; gap: 4px; color: var(--verde); font-size: 14px; line-height: 20px; font-weight: 600; }
-.sello {
-  position: absolute; top: 12px; left: 12px; display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 8px; border-radius: 9999px; background: var(--verde); color: #04140a;
-  font-size: 12px; line-height: 16px; font-weight: 700;
-}
 
 /* Ficha del producto (se abre al tocar la foto) */
 .ficha {

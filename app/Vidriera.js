@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { ArrowRightIcon, CheckIcon, ShieldCheckIcon, WhatsappLogoIcon, XIcon } from '@phosphor-icons/react';
+import { CheckIcon, ShieldCheckIcon, WhatsappLogoIcon, XIcon } from '@phosphor-icons/react';
 import { consultar, garantia, pesos } from '../lib/contacto';
 
 const precioTexto = p => (p.desde ? 'Desde ' : '') + pesos(p.precio);
@@ -36,16 +36,11 @@ export default function Vidriera({ productos }) {
 
       <div className="vidriera">
         {lista.map(p => (
-          <button key={p.id} className="tarjeta" onClick={() => abrir(p)} aria-haspopup="dialog" aria-label={`Ver ${p.nombre}, ${precioTexto(p)}`}>
+          // En la tarjeta solo van la foto y el título; el resto se ve al tocarla
+          <button key={p.id} className="tarjeta" onClick={() => abrir(p)} aria-haspopup="dialog" aria-label={`Ver ${p.nombre}`}>
             <Image src={p.fotos[0]} alt="" fill sizes="(max-width: 720px) 100vw, 400px" className="tarjeta-foto" />
-            <span className="sello"><ShieldCheckIcon size={12} weight="bold" /> {garantia} de garantía</span>
             <span className="tarjeta-info">
-              <small>{p.categoria}</small>
               <strong>{p.nombre}</strong>
-              <span className="tarjeta-pie">
-                <span className="precio">{precioTexto(p)}</span>
-                <span className="ver">Ver <ArrowRightIcon size={14} /></span>
-              </span>
             </span>
           </button>
         ))}

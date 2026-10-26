@@ -59,7 +59,6 @@ export default function Inicio() {
           <div className="contenedor">
             <p className="etiqueta">Ofertas</p>
             <h2 className="titulo">Tocá un producto para ver todo</h2>
-            <p className="bajada">Precio, fotos, detalles y garantía de {garantia}. Si te interesa, consultás por WhatsApp con un toque.</p>
             <Vidriera productos={productos} />
           </div>
         </section>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { upload } from '@vercel/blob/client';
-import { TrashIcon, UploadSimpleIcon } from '@phosphor-icons/react';
+import { CurrencyDollarIcon, PackageIcon, ReceiptIcon, TrashIcon, UploadSimpleIcon } from '@phosphor-icons/react';
 import { pesos } from '../../lib/contacto';
 
 export default function Panel({ categorias, garantiaBase }) {
@@ -18,6 +18,8 @@ export default function Panel({ categorias, garantiaBase }) {
   const [error, setError] = useState('');
   const [ocupado, setOcupado] = useState(false);
   const [lista, setLista] = useState(null);
+  const [vista, setVista] = useState('productos');
+  const [ventas, setVentas] = useState(null);
   // Contraseña con la que se pidió la lista: los costos solo llegan si es correcta
   const [claveLista, setClaveLista] = useState('');
 
@@ -38,6 +40,7 @@ export default function Panel({ categorias, garantiaBase }) {
     e.preventDefault();
     const form = e.currentTarget;
     setError('');
+    if (!clave) return setError('Escribí la contraseña del panel.');
     if (!archivos.length) return setError('Elegí al menos una foto.');
     if (archivos.length > 8) return setError('Podés subir hasta 8 fotos por producto.');
     const grande = archivos.find(a => a.size > 10 * 1024 * 1024);
@@ -86,14 +89,66 @@ export default function Panel({ categorias, garantiaBase }) {
     cargarLista();
   }
 
+  // Registra la venta con el precio final (puede diferir del publicado) y opcionalmente saca el producto
+  async function vender(p) {
+    const texto = prompt(`Precio final de venta de "${p.nombre}"`, String(p.precio));
+    if (texto === null) return;
+    const precioFinal = Number(texto.replace(/[^\d]/g, ''));
+    if (!(precioFinal > 0)) return setError('El precio final tiene que ser un número mayor a cero.');
+    const quitar = confirm('¿Sacar el producto de la vidriera?\n\nAceptar: se borra la publicación y sus fotos.\nCancelar: queda publicado (por ejemplo, si tenés más stock).');
+    setError('');
+    const r = await fetch('/api/ventas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clave, url: p.url, precio: precioFinal, quitar })
+    });
+    if (!r.ok) return setError((await r.json()).error);
+    setEstado(`Venta registrada: ${p.nombre} por ${pesos(precioFinal)}`);
+    cargarLista();
+  }
+
+  async function cargarVentas() {
+    setVentas(null);
+    const r = await fetch('/api/ventas', { headers: { 'x-clave': claveLista } });
+    setVentas(r.ok ? await r.json() : 'sin-clave');
+  }
+  useEffect(() => { if (vista === 'ventas') cargarVentas(); }, [vista, claveLista]);
+
+  async function borrarVenta(v) {
+    if (!confirm(`¿Borrar la venta de "${v.nombre}"? El producto no vuelve a la vidriera.`)) return;
+    setError('');
+    const r = await fetch('/api/ventas', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clave, url: v.url })
+    });
+    if (!r.ok) return setError((await r.json()).error);
+    cargarVentas();
+  }
+
   const nombreCategoria = categorias.find(c => c.slug === categoria).nombre;
 
   return (
+    <>
+      <div className="admin-barra">
+        <label>Contraseña del panel
+          <input type="password" value={clave} onChange={e => setClave(e.target.value)} onBlur={() => setClaveLista(clave)} autoComplete="current-password" />
+        </label>
+        <div className="filtros" role="tablist">
+          <button role="tab" aria-selected={vista === 'productos'} className={`filtro${vista === 'productos' ? ' activo' : ''}`} onClick={() => setVista('productos')}>
+            <PackageIcon size={16} /> Productos
+          </button>
+          <button role="tab" aria-selected={vista === 'ventas'} className={`filtro${vista === 'ventas' ? ' activo' : ''}`} onClick={() => setVista('ventas')}>
+            <ReceiptIcon size={16} /> Ventas
+          </button>
+        </div>
+      </div>
+      {estado && <p className="nota" role="status">{estado}</p>}
+      {error && <p className="error" role="alert">{error}</p>}
+
+      {vista === 'ventas' ? <Ventas ventas={ventas} onBorrar={borrarVenta} /> : (
     <div className="panel-admin">
       <form onSubmit={publicar} className="formulario">
-        <label>Contraseña del panel
-          <input type="password" value={clave} onChange={e => setClave(e.target.value)} onBlur={() => setClaveLista(clave)} autoComplete="current-password" required />
-        </label>
         <label>Categoría
           <select value={categoria} onChange={e => setCategoria(e.target.value)}>
             {categorias.map(c => <option key={c.slug} value={c.slug}>{c.nombre}</option>)}
@@ -123,8 +178,6 @@ export default function Panel({ categorias, garantiaBase }) {
         <button className="btn btn-azul" disabled={ocupado}>
           <UploadSimpleIcon size={16} /> {ocupado ? 'Publicando' : 'Publicar producto'}
         </button>
-        {estado && <p className="nota" role="status">{estado}</p>}
-        {error && <p className="error" role="alert">{error}</p>}
       </form>
 
       <div>
@@ -143,11 +196,63 @@ export default function Panel({ categorias, garantiaBase }) {
                     {'costo' in p && (p.costo === null ? ' · Sin costo cargado' : ` · Costo ${pesos(p.costo)} · Ganancia ${pesos(p.precio - p.costo)}`)}
                     {' '}· Garantía {p.garantia} · {p.fotos.length} {p.fotos.length === 1 ? 'foto' : 'fotos'}</span>
                 </div>
+                <button className="btn btn-gris btn-chico" onClick={() => vender(p)}><CurrencyDollarIcon size={16} /> Vendido</button>
                 <button className="btn-icono" aria-label={`Borrar ${p.nombre}`} onClick={() => borrar(p)}><TrashIcon size={16} /></button>
               </li>
             ))}
           </ul>
         )}
+      </div>
+    </div>
+      )}
+    </>
+  );
+}
+
+const fecha = iso => new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+// Resumen y detalle de las ventas registradas
+function Ventas({ ventas, onBorrar }) {
+  if (ventas === null) return <p className="nota">Cargando ventas</p>;
+  if (ventas === 'sin-clave') return <p className="nota">Escribí la contraseña del panel para ver las ventas.</p>;
+  if (ventas.length === 0) return <p className="nota">Todavía no registraste ventas. Usá el botón Vendido en la lista de productos.</p>;
+
+  const total = ventas.reduce((s, v) => s + v.precio, 0);
+  const conCosto = ventas.filter(v => v.costo !== null);
+  const costoTotal = conCosto.reduce((s, v) => s + v.costo, 0);
+  const ganancia = conCosto.reduce((s, v) => s + v.precio - v.costo, 0);
+
+  return (
+    <div className="ventas">
+      <div className="ventas-resumen">
+        <div><span>Ventas</span><strong>{ventas.length}</strong></div>
+        <div><span>Total vendido</span><strong>{pesos(total)}</strong></div>
+        <div><span>Costo total</span><strong>{pesos(costoTotal)}</strong></div>
+        <div><span>Ganancia</span><strong className={ganancia < 0 ? 'negativo' : 'positivo'}>{pesos(ganancia)}</strong></div>
+      </div>
+      {conCosto.length < ventas.length && (
+        <p className="nota">{ventas.length - conCosto.length} {ventas.length - conCosto.length === 1 ? 'venta no tiene' : 'ventas no tienen'} costo cargado y no {ventas.length - conCosto.length === 1 ? 'suma' : 'suman'} al costo ni a la ganancia.</p>
+      )}
+      <div className="tabla-ventas">
+        <table>
+          <thead>
+            <tr><th>Fecha</th><th>Producto</th><th>Costo</th><th>Venta final</th><th>Ganancia</th><th><span className="sr-only">Acciones</span></th></tr>
+          </thead>
+          <tbody>
+            {ventas.map(v => (
+              <tr key={v.id}>
+                <td>{fecha(v.fecha)}</td>
+                <td><strong>{v.nombre}</strong><span>{v.categoria}</span></td>
+                <td>{v.costo === null ? 'Sin cargar' : pesos(v.costo)}</td>
+                <td>{pesos(v.precio)}</td>
+                <td className={v.costo === null ? '' : v.precio - v.costo < 0 ? 'negativo' : 'positivo'}>
+                  {v.costo === null ? '—' : pesos(v.precio - v.costo)}
+                </td>
+                <td><button className="btn-icono" aria-label={`Borrar la venta de ${v.nombre}`} onClick={() => onBorrar(v)}><TrashIcon size={16} /></button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

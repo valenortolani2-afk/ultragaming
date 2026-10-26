@@ -257,8 +257,8 @@ img { display: block; }
 .subtitulo { font-size: 18px; line-height: 28px; margin-bottom: 16px; }
 .panel-admin { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 .formulario, .aviso { display: grid; gap: 16px; padding: 24px; border-radius: 16px; background: var(--sup1); border: 1px solid var(--borde); }
-.formulario label { display: grid; gap: 8px; font-size: 14px; line-height: 20px; font-weight: 500; }
-.formulario input, .formulario select, .formulario textarea {
+.formulario label, .admin-barra label { display: grid; gap: 8px; font-size: 14px; line-height: 20px; font-weight: 500; }
+.formulario input, .formulario select, .formulario textarea, .admin-barra input {
   padding: 8px 12px; border-radius: 8px; border: 1px solid var(--borde2);
   background: var(--sup2); color: var(--texto); font: inherit; font-size: 16px;
 }
@@ -275,7 +275,37 @@ img { display: block; }
 .lista-admin div { flex: 1; min-width: 0; }
 .lista-admin h4 { font-size: 14px; line-height: 20px; font-weight: 500; }
 .lista-admin span { color: var(--gris); font-size: 12px; line-height: 16px; }
-@media (max-width: 960px) { .panel-admin { grid-template-columns: minmax(0, 1fr); } }
+.lista-admin .btn { flex: none; padding: 4px 12px; }
+
+/* Contraseña y pestañas Productos / Ventas */
+.admin-barra { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.admin-barra label { width: min(320px, 100%); }
+.admin-barra .filtros { margin-bottom: 0; }
+.admin-barra .filtro { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; }
+.admin > .nota, .admin > .error { margin-bottom: 16px; }
+
+/* Ventas */
+.ventas { display: grid; gap: 16px; margin-top: 8px; }
+.ventas-resumen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ventas-resumen div { display: grid; gap: 4px; padding: 16px; border-radius: 12px; background: var(--sup1); border: 1px solid var(--borde); }
+.ventas-resumen span { color: var(--gris); font-size: 14px; line-height: 20px; }
+.ventas-resumen strong { font-size: 24px; line-height: 32px; }
+.positivo { color: var(--verde); }
+.negativo { color: #ff6b4a; }
+.tabla-ventas { overflow-x: auto; border-radius: 12px; border: 1px solid var(--borde); background: var(--sup1); }
+.tabla-ventas table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
+.tabla-ventas th { text-align: left; color: var(--gris); font-weight: 500; padding: 12px 16px; border-bottom: 1px solid var(--borde); white-space: nowrap; }
+.tabla-ventas td { padding: 12px 16px; border-bottom: 1px solid var(--borde); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tabla-ventas tr:last-child td { border-bottom: none; }
+.tabla-ventas td strong { display: block; font-weight: 500; white-space: normal; min-width: 200px; }
+.tabla-ventas td span { color: var(--gris); font-size: 12px; line-height: 16px; }
+.tabla-ventas td:last-child { width: 1%; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 960px) {
+  .panel-admin { grid-template-columns: minmax(0, 1fr); }
+  .ventas-resumen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
 /* Aparición al hacer scroll */
 .revelar { opacity: 0; transform: translateY(32px); transition: opacity 700ms var(--curva), transform 700ms var(--curva); }

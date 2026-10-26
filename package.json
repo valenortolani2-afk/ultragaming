@@ -1,0 +1,21 @@
+{
+  "name": "ultra-gaming",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "importar": "node importar.js"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "@vercel/blob": "^2.8.2",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "overrides": {
+    "zod": "^4.6.6"
+  }
+}

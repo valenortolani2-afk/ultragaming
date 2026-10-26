@@ -1,0 +1,74 @@
+[
+  {
+    "id": "mouse-inalambrico-gamer-26000-dpi",
+    "nombre": "Mouse inalámbrico gamer 26000 DPI",
+    "marca": "Ejemplo",
+    "categoria": "Mouse",
+    "precio": 49500,
+    "imagen": "",
+    "descripcion": "Producto de ejemplo. Reemplazalo por la lista de tu proveedor."
+  },
+  {
+    "id": "mouse-ultraliviano-55-g",
+    "nombre": "Mouse ultraliviano 55 g",
+    "marca": "Ejemplo",
+    "categoria": "Mouse",
+    "precio": 41800,
+    "imagen": "",
+    "descripcion": "Producto de ejemplo."
+  },
+  {
+    "id": "teclado-mecanico-rgb-75",
+    "nombre": "Teclado mecánico RGB 75%",
+    "marca": "Ejemplo",
+    "categoria": "Teclados",
+    "precio": 79200,
+    "imagen": "",
+    "descripcion": "Producto de ejemplo."
+  },
+  {
+    "id": "teclado-mecanico-tkl-switches-red",
+    "nombre": "Teclado mecánico TKL switches red",
+    "marca": "Ejemplo",
+    "categoria": "Teclados",
+    "precio": 63800,
+    "imagen": "",
+    "descripcion": "Producto de ejemplo."
+  },
+  {
+    "id": "auriculares-inalambricos-7-1",
+    "nombre": "Auriculares inalámbricos 7.1",
+    "marca": "Ejemplo",
+    "categoria": "Auriculares",
+    "precio": 97900,
+    "imagen": "",
+    "descripcion": "Producto de ejemplo."
+  },
+  {
+    "id": "auriculares-con-microfono-usb",
+    "nombre": "Auriculares con micrófono USB",
+    "marca": "Ejemplo",
+    "categoria": "Auriculares",
+    "precio": 45100,
+    "imagen": "",
+    "descripcion": "Producto de ejemplo."
+  },
+  {
+    "id": "monitor-24-ips-165-hz",
+    "nombre": "Monitor 24\" IPS 165 Hz",
+    "marca": "Ejemplo",
+    "categoria": "Monitores",
+    "precio": 269500,
+    "imagen": "",
+    "descripcion": "Producto de ejemplo."
+  },
+  {
+    "id": "joystick-inalambrico-pc-xbox",
+    "nombre": "Joystick inalámbrico PC/Xbox",
+    "marca": "Ejemplo",
+    "categoria": "Joysticks",
+    "precio": 73700,
+    "imagen": "",
+    "descripcion": "Producto de ejemplo."
+  }
+]

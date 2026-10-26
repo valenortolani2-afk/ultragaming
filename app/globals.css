@@ -157,8 +157,9 @@ img { display: block; }
 @starting-style { .ficha[open] { opacity: 0; transform: translateY(32px); } }
 .ficha::backdrop { background: rgba(2, 6, 12, .75); backdrop-filter: blur(4px); }
 .ficha-grid { display: grid; grid-template-columns: 1fr 1fr; }
-.ficha-fotos { position: relative; min-height: 420px; background: #fff; }
-.ficha-fotos img { object-fit: contain; padding: 24px; }
+/* La foto cubre toda la columna y queda fija mientras se lee el texto, sin agrandarse con descripciones largas */
+.ficha-fotos { position: sticky; top: 0; align-self: start; height: min(100%, 100dvh - 34px); min-height: 420px; background: var(--sup2); overflow: hidden; }
+.ficha-fotos > img { object-fit: cover; object-position: center; }
 .miniaturas { position: absolute; bottom: 12px; left: 12px; display: flex; gap: 8px; }
 .miniaturas button { width: 48px; height: 48px; border-radius: 8px; border: 2px solid var(--borde2); background: #fff; overflow: hidden; cursor: pointer; position: relative; }
 .miniaturas button.activa { border-color: var(--azul); }
@@ -282,7 +283,7 @@ img { display: block; }
 
 @media (max-width: 960px) {
   .ficha-grid, .local, .asesor { grid-template-columns: minmax(0, 1fr); }
-  .ficha-fotos { min-height: 320px; }
+  .ficha-fotos { position: relative; height: auto; min-height: 320px; }
   .beneficios { grid-template-columns: 1fr 1fr; }
   .frase p { font-size: 48px; }
 }

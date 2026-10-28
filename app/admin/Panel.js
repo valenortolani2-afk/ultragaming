@@ -242,7 +242,10 @@ function Ventas({ ventas, onBorrar }) {
             {ventas.map(v => (
               <tr key={v.id}>
                 <td>{fecha(v.fecha)}</td>
-                <td><strong>{v.nombre}</strong><span>{v.categoria}</span></td>
+                <td>
+                  <strong>{v.nombre}</strong>
+                  <span>{[v.categoria, v.origen && `${v.origen} N° ${v.pago}`, v.comprador].filter(Boolean).join(' · ')}</span>
+                </td>
                 <td>{v.costo === null ? 'Sin cargar' : pesos(v.costo)}</td>
                 <td>{pesos(v.precio)}</td>
                 <td className={v.costo === null ? '' : v.precio - v.costo < 0 ? 'negativo' : 'positivo'}>

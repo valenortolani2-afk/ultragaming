@@ -1,5 +1,6 @@
 import { Geist } from 'next/font/google';
 import './globals.css';
+import { CarritoProvider } from './Carrito';
 
 const geist = Geist({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font' });
 
@@ -22,7 +23,7 @@ export default function RootLayout({ children }) {
     <html lang="es" className={geist.variable}>
       <body>
         <a href="#contenido" className="skip">Saltar al contenido</a>
-        {children}
+        <CarritoProvider>{children}</CarritoProvider>
       </body>
     </html>
   );

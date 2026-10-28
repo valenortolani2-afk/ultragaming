@@ -2,8 +2,9 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { CheckIcon, ShieldCheckIcon, WhatsappLogoIcon, XIcon } from '@phosphor-icons/react';
+import { CheckIcon, ShieldCheckIcon, ShoppingCartIcon, WhatsappLogoIcon, XIcon } from '@phosphor-icons/react';
 import { consultar, garantia, pesos } from '../lib/contacto';
+import { useCarrito } from './Carrito';
 
 const precioTexto = p => (p.desde ? 'Desde ' : '') + pesos(p.precio);
 
@@ -12,6 +13,7 @@ export default function Vidriera({ productos }) {
   const [elegido, setElegido] = useState(null);
   const [fotoActiva, setFotoActiva] = useState(0);
   const ficha = useRef(null);
+  const { agregar } = useCarrito();
 
   // Al tocar una foto se abre la ficha con info, precio y garantía
   function abrir(p) {
@@ -80,6 +82,11 @@ export default function Vidriera({ productos }) {
               </ul>}
 
               <div className="ficha-acciones">
+                {!elegido.desde && (
+                  <button className="btn btn-azul" onClick={() => { cerrar(); agregar(elegido); }}>
+                    <ShoppingCartIcon size={16} /> Agregar al carrito
+                  </button>
+                )}
                 <a className="btn btn-wa" target="_blank" rel="noopener noreferrer"
                   href={consultar(`Hola, quiero consultar por "${elegido.nombre}" (${precioTexto(elegido)}).`)}>
                   <WhatsappLogoIcon size={16} weight="fill" /> Consultar por WhatsApp

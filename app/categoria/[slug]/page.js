@@ -6,6 +6,7 @@ import { buscarCategoria, categorias } from '../../../lib/categorias';
 import { listarPublicaciones } from '../../../lib/publicaciones';
 import { consultar, garantia, whatsapp } from '../../../lib/contacto';
 import Vidriera from '../../Vidriera';
+import { BotonCarrito } from '../../Carrito';
 
 // Se arma en cada visita para mostrar al instante lo que se sube desde /admin
 export const dynamic = 'force-dynamic';
@@ -32,6 +33,7 @@ export default async function PaginaCategoria({ params }) {
           <a href={whatsapp.link} className="btn-icono" target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${whatsapp.texto}`}>
             <WhatsappLogoIcon size={16} />
           </a>
+          <BotonCarrito />
         </div>
       </nav>
 

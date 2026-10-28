@@ -8,10 +8,43 @@ import { useCarrito } from './Carrito';
 
 const precioTexto = p => (p.desde ? 'Desde ' : '') + pesos(p.precio);
 
+// Si el borde de la foto es de un solo color (ej: producto sobre fondo blanco), devuelve ese color.
+// Si es variado (una foto real), devuelve null y se usa la foto desenfocada de fondo.
+function colorDelBorde(img) {
+  try {
+    const lado = 32;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = lado;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    // Las partes transparentes (PNG sin fondo) cuentan como blanco
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, lado, lado);
+    ctx.drawImage(img, 0, 0, lado, lado);
+    const { data } = ctx.getImageData(0, 0, lado, lado);
+    const borde = [];
+    for (let i = 0; i < lado; i++) for (const [x, y] of [[i, 0], [i, lado - 1], [0, i], [lado - 1, i]]) {
+      const p = (y * lado + x) * 4;
+      borde.push([data[p], data[p + 1], data[p + 2]]);
+    }
+    // Agrupa los colores parecidos del borde: si uno solo cubre la mayor parte, ese es el fondo
+    const grupos = {};
+    for (const px of borde) (grupos[px.map(v => v >> 5).join()] ??= []).push(px);
+    const mayor = Object.values(grupos).sort((a, b) => b.length - a.length)[0];
+    if (mayor.length < borde.length * 0.7) return null;
+    const media = [0, 1, 2].map(c => Math.round(mayor.reduce((s, px) => s + px[c], 0) / mayor.length));
+    return `rgb(${media.join(' ')})`;
+  } catch { return null; }
+}
+
 // Grilla de publicaciones de una categoría. Al tocar una se abre su ficha.
 export default function Vidriera({ productos }) {
   const [elegido, setElegido] = useState(null);
   const [fotoActiva, setFotoActiva] = useState(0);
+  // Color de relleno calculado para una foto; se guarda con su dirección para no mezclarlo con otra
+  const [relleno, setRelleno] = useState({ src: null, color: null });
+  const fotoVista = elegido?.fotos[fotoActiva];
+  const fondo = relleno.src === fotoVista ? relleno.color : null;
+  const medirRelleno = img => relleno.src !== fotoVista && setRelleno({ src: fotoVista, color: colorDelBorde(img) });
   const ficha = useRef(null);
   const { agregar } = useCarrito();
 
@@ -41,8 +74,13 @@ export default function Vidriera({ productos }) {
       <dialog ref={ficha} className="ficha" aria-labelledby="ficha-titulo" onClick={e => e.target === ficha.current && cerrar()}>
         {elegido && (
           <div className="ficha-grid">
-            <div className="ficha-fotos">
-              <Image src={elegido.fotos[fotoActiva]} alt={elegido.nombre} fill sizes="(max-width: 960px) 100vw, 480px" />
+            <div className="ficha-fotos" style={fondo ? { background: fondo } : undefined}>
+              {/* El espacio que sobra se llena con el color del borde de la foto o, si no es parejo, con la foto desenfocada */}
+              {!fondo && <Image src={elegido.fotos[fotoActiva]} alt="" aria-hidden fill sizes="64px" className="ficha-fondo" />}
+              <Image src={elegido.fotos[fotoActiva]} alt={elegido.nombre} fill sizes="(max-width: 960px) 100vw, 480px" className="ficha-foto"
+                onLoad={e => medirRelleno(e.currentTarget)}
+                // Si la foto ya estaba en caché, onLoad a veces no llega: se mide apenas aparece
+                ref={img => img?.complete && img.naturalWidth > 0 && medirRelleno(img)} />
               {elegido.fotos.length > 1 && (
                 <div className="miniaturas">
                   {elegido.fotos.map((f, i) => (

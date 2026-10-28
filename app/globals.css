@@ -159,7 +159,9 @@ img { display: block; }
 .ficha-grid { display: grid; grid-template-columns: 1fr 1fr; }
 /* La foto cubre toda la columna y queda fija mientras se lee el texto, sin agrandarse con descripciones largas */
 .ficha-fotos { position: sticky; top: 0; align-self: start; height: min(100%, 100dvh - 34px); min-height: 420px; background: var(--sup2); overflow: hidden; }
-.ficha-fotos > img { object-fit: cover; object-position: center; }
+/* La foto se ve completa (horizontal o vertical) y el resto se llena con ella misma desenfocada */
+.ficha-fotos > .ficha-fondo { object-fit: cover; filter: blur(32px) saturate(1.2); transform: scale(1.3); opacity: .9; }
+.ficha-fotos > .ficha-foto { object-fit: contain; object-position: center; }
 .miniaturas { position: absolute; bottom: 12px; left: 12px; display: flex; gap: 8px; }
 .miniaturas button { width: 48px; height: 48px; border-radius: 8px; border: 2px solid var(--borde2); background: #fff; overflow: hidden; cursor: pointer; position: relative; }
 .miniaturas button.activa { border-color: var(--azul); }

@@ -318,6 +318,26 @@ img { display: block; }
 .lista-admin h4 { font-size: 14px; line-height: 20px; font-weight: 500; }
 .lista-admin span { color: var(--gris); font-size: 12px; line-height: 16px; }
 .lista-admin .btn { flex: none; padding: 4px 12px; }
+.lista-admin li:has(.editor-fotos) { flex-wrap: wrap; }
+.lista-admin .editor-fotos { flex-basis: 100%; display: grid; gap: 12px; padding-top: 12px; border-top: 1px solid var(--borde); }
+.editor-acciones { display: flex; gap: 8px; }
+
+/* Orden de fotos: la primera es la portada */
+.orden-fotos { display: grid; gap: 8px; }
+.orden-fotos ol { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.orden-fotos li { display: grid; gap: 4px; width: 96px; padding: 4px; border-radius: 12px; border: 2px solid var(--borde2); background: var(--sup2); }
+.orden-fotos li.portada { border-color: var(--verde); }
+.orden-fotos img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 8px; }
+.orden-fotos .sello {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 2px 4px; border-radius: 6px;
+  border: none; background: none; color: var(--gris); font: inherit; font-size: 11px; line-height: 16px; font-weight: 500;
+}
+.orden-fotos li.portada .sello { color: var(--verde); }
+.orden-fotos button.sello { cursor: pointer; color: var(--texto); background: var(--sup1); }
+.orden-fotos button.sello:hover { background: var(--borde); }
+.flechas { display: flex; justify-content: space-between; }
+.flechas button { display: grid; place-items: center; width: 28px; height: 24px; border-radius: 6px; border: none; background: var(--sup1); color: var(--texto); cursor: pointer; }
+.flechas button:disabled { opacity: .3; cursor: not-allowed; }
 
 /* Contraseña y pestañas Productos / Ventas */
 .admin-barra { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }

@@ -1,5 +1,5 @@
 import {
-  blobConfigurado, borrarPublicacion, claveValida, esDeBlob, guardarPublicacion, listarCostos, listarPublicaciones
+  blobConfigurado, borrarPublicacion, claveValida, esDeBlob, guardarPublicacion, listarCostos, listarPublicaciones, ordenarFotos
 } from '../../../lib/publicaciones';
 import { buscarCategoria } from '../../../lib/categorias';
 
@@ -38,6 +38,20 @@ export async function POST(request) {
     fotos
   });
   return Response.json(publicacion);
+}
+
+// Cambia el orden de las fotos de un producto
+export async function PATCH(request) {
+  if (!blobConfigurado()) return error('Falta conectar Vercel Blob (BLOB_READ_WRITE_TOKEN)', 500);
+  const { clave, url, fotos } = await request.json().catch(() => ({}));
+  if (!claveValida(clave)) return error('Contraseña incorrecta', 401);
+  if (!esDeBlob(url) || !new URL(url).pathname.startsWith('/publicaciones/')) return error('Producto inválido', 400);
+  if (!Array.isArray(fotos) || !fotos.length || !fotos.every(esDeBlob)) return error('Fotos inválidas', 400);
+  try {
+    return Response.json(await ordenarFotos(url, fotos));
+  } catch (err) {
+    return error(err.message, 400);
+  }
 }
 
 // Borra un producto y sus fotos

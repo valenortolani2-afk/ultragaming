@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { upload } from '@vercel/blob/client';
-import { CurrencyDollarIcon, PackageIcon, ReceiptIcon, TrashIcon, UploadSimpleIcon } from '@phosphor-icons/react';
+import {
+  CaretLeftIcon, CaretRightIcon, CurrencyDollarIcon, ImagesIcon, PackageIcon, ReceiptIcon, StarIcon, TrashIcon, UploadSimpleIcon
+} from '@phosphor-icons/react';
 import { pesos } from '../../lib/contacto';
 
 export default function Panel({ categorias, garantiaBase }) {
@@ -22,6 +24,17 @@ export default function Panel({ categorias, garantiaBase }) {
   const [ventas, setVentas] = useState(null);
   // Contraseña con la que se pidió la lista: los costos solo llegan si es correcta
   const [claveLista, setClaveLista] = useState('');
+  // Producto al que se le está cambiando el orden de las fotos
+  const [editando, setEditando] = useState(null);
+  const [guardandoOrden, setGuardandoOrden] = useState(false);
+
+  // Vistas previas de las fotos elegidas para publicar
+  const [previas, setPrevias] = useState([]);
+  useEffect(() => {
+    const urls = archivos.map(a => URL.createObjectURL(a));
+    setPrevias(urls);
+    return () => urls.forEach(u => URL.revokeObjectURL(u));
+  }, [archivos]);
 
   // La contraseña se recuerda solo mientras la pestaña esté abierta
   useEffect(() => {
@@ -74,6 +87,21 @@ export default function Panel({ categorias, garantiaBase }) {
     } finally {
       setOcupado(false);
     }
+  }
+
+  async function guardarOrden() {
+    setError('');
+    setGuardandoOrden(true);
+    const r = await fetch('/api/publicaciones', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clave, url: editando.url, fotos: editando.fotos })
+    });
+    setGuardandoOrden(false);
+    if (!r.ok) return setError((await r.json()).error);
+    setEstado(`Orden de fotos guardado: ${editando.nombre}`);
+    setLista(l => l.map(p => p.url === editando.url ? { ...p, fotos: editando.fotos } : p));
+    setEditando(null);
   }
 
   async function borrar(p) {
@@ -175,6 +203,9 @@ export default function Panel({ categorias, garantiaBase }) {
         <label>Fotos (hasta 8, máximo 10 MB cada una)
           <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple onChange={e => setArchivos([...e.target.files])} required />
         </label>
+        {archivos.length > 1 && previas.length === archivos.length && (
+          <OrdenFotos srcs={previas} onOrden={orden => setArchivos(orden.map(i => archivos[i]))} />
+        )}
         <button className="btn btn-azul" disabled={ocupado}>
           <UploadSimpleIcon size={16} /> {ocupado ? 'Publicando' : 'Publicar producto'}
         </button>
@@ -196,8 +227,26 @@ export default function Panel({ categorias, garantiaBase }) {
                     {'costo' in p && (p.costo === null ? ' · Sin costo cargado' : ` · Costo ${pesos(p.costo)} · Ganancia ${pesos(p.precio - p.costo)}`)}
                     {' '}· Garantía {p.garantia} · {p.fotos.length} {p.fotos.length === 1 ? 'foto' : 'fotos'}</span>
                 </div>
+                {p.fotos.length > 1 && (
+                  <button className="btn-icono" aria-label={`Ordenar las fotos de ${p.nombre}`} aria-expanded={editando?.url === p.url}
+                    onClick={() => setEditando(editando?.url === p.url ? null : { url: p.url, nombre: p.nombre, fotos: p.fotos })}>
+                    <ImagesIcon size={16} />
+                  </button>
+                )}
                 <button className="btn btn-gris btn-chico" onClick={() => vender(p)}><CurrencyDollarIcon size={16} /> Vendido</button>
                 <button className="btn-icono" aria-label={`Borrar ${p.nombre}`} onClick={() => borrar(p)}><TrashIcon size={16} /></button>
+                {editando?.url === p.url && (
+                  <section className="editor-fotos" aria-label={`Orden de las fotos de ${p.nombre}`}>
+                    <OrdenFotos srcs={editando.fotos} onOrden={orden => setEditando(e => ({ ...e, fotos: orden.map(i => e.fotos[i]) }))} />
+                    <div className="editor-acciones">
+                      <button className="btn btn-azul btn-chico" onClick={guardarOrden}
+                        disabled={guardandoOrden || editando.fotos.join() === p.fotos.join()}>
+                        {guardandoOrden ? 'Guardando' : 'Guardar orden'}
+                      </button>
+                      <button className="btn btn-gris btn-chico" onClick={() => setEditando(null)}>Cancelar</button>
+                    </div>
+                  </section>
+                )}
               </li>
             ))}
           </ul>
@@ -206,6 +255,36 @@ export default function Panel({ categorias, garantiaBase }) {
     </div>
       )}
     </>
+  );
+}
+
+// Fotos en fila: la primera es la portada. Se puede poner cualquiera primera o moverla un lugar.
+// onOrden recibe el nuevo orden como lista de posiciones originales.
+function OrdenFotos({ srcs, onOrden }) {
+  const posiciones = srcs.map((_, i) => i);
+  const mover = (de, a) => {
+    const orden = [...posiciones];
+    orden.splice(a, 0, orden.splice(de, 1)[0]);
+    onOrden(orden);
+  };
+  return (
+    <div className="orden-fotos">
+      <p className="nota">La primera foto es la portada del producto.</p>
+      <ol>
+        {srcs.map((src, i) => (
+          <li key={src} className={i === 0 ? 'portada' : ''}>
+            <img src={src} alt={`Foto ${i + 1}`} />
+            {i === 0 ? <span className="sello"><StarIcon size={12} weight="fill" /> Portada</span> : (
+              <button type="button" className="sello" onClick={() => mover(i, 0)}>Poner primera</button>
+            )}
+            <div className="flechas">
+              <button type="button" onClick={() => mover(i, i - 1)} disabled={i === 0} aria-label={`Mover la foto ${i + 1} a la izquierda`}><CaretLeftIcon size={14} /></button>
+              <button type="button" onClick={() => mover(i, i + 1)} disabled={i === srcs.length - 1} aria-label={`Mover la foto ${i + 1} a la derecha`}><CaretRightIcon size={14} /></button>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 

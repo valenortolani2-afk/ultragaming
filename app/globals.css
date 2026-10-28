@@ -147,6 +147,17 @@ img { display: block; }
 }
 .tarjeta-info strong { font-size: 16px; line-height: 24px; font-weight: 600; }
 
+/* Precio y botón Comprar debajo de cada tarjeta */
+.producto { display: grid; gap: 8px; }
+.producto-compra {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 8px 8px 8px 16px; border-radius: 16px; background: var(--sup1); border: 1px solid var(--borde);
+}
+.producto-precio { font-size: 20px; line-height: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.btn-comprar { background: var(--verde); color: #04140a; font-weight: 700; }
+.btn-comprar:hover { background: #5cf052; }
+.btn-grande { width: 100%; justify-content: center; padding-top: 14px; padding-bottom: 14px; font-size: 18px; line-height: 24px; }
+
 /* Ficha del producto (se abre al tocar la foto) */
 .ficha {
   width: min(960px, 100% - 32px); max-height: calc(100% - 32px); margin: auto; padding: 0;

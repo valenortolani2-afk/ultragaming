@@ -60,13 +60,23 @@ export default function Vidriera({ productos }) {
     <>
       <div className="vidriera">
         {productos.map(p => (
-          // En la tarjeta solo van la foto y el título; el resto se ve al tocarla
-          <button key={p.id} className="tarjeta" onClick={() => abrir(p)} aria-haspopup="dialog" aria-label={`Ver ${p.nombre}`}>
-            <Image src={p.fotos[0]} alt="" fill sizes="(max-width: 720px) 100vw, 400px" className="tarjeta-foto" />
-            <span className="tarjeta-info">
-              <strong>{p.nombre}</strong>
-            </span>
-          </button>
+          <article key={p.id} className="producto">
+            {/* En la tarjeta van la foto y el título; el resto se ve al tocarla */}
+            <button className="tarjeta" onClick={() => abrir(p)} aria-haspopup="dialog" aria-label={`Ver ${p.nombre}`}>
+              <Image src={p.fotos[0]} alt="" fill sizes="(max-width: 720px) 100vw, 400px" className="tarjeta-foto" />
+              <span className="tarjeta-info">
+                <strong>{p.nombre}</strong>
+              </span>
+            </button>
+            <div className="producto-compra">
+              <span className="producto-precio">{precioTexto(p)}</span>
+              {!p.desde && (
+                <button className="btn btn-comprar" onClick={() => agregar(p)} aria-label={`Comprar ${p.nombre}`}>
+                  <ShoppingCartIcon size={18} weight="bold" /> Comprar
+                </button>
+              )}
+            </div>
+          </article>
         ))}
       </div>
 
@@ -106,6 +116,12 @@ export default function Vidriera({ productos }) {
                 <small>Precio final. Consultá cuotas y formas de pago.</small>
               </div>
 
+              {!elegido.desde && (
+                <button className="btn btn-comprar btn-grande" onClick={() => { cerrar(); agregar(elegido); }}>
+                  <ShoppingCartIcon size={20} weight="bold" /> Comprar
+                </button>
+              )}
+
               <div className="garantia-caja">
                 <ShieldCheckIcon size={28} weight="fill" />
                 <div>
@@ -121,8 +137,8 @@ export default function Vidriera({ productos }) {
 
               <div className="ficha-acciones">
                 {!elegido.desde && (
-                  <button className="btn btn-azul" onClick={() => { cerrar(); agregar(elegido); }}>
-                    <ShoppingCartIcon size={16} /> Agregar al carrito
+                  <button className="btn btn-comprar" onClick={() => { cerrar(); agregar(elegido); }}>
+                    <ShoppingCartIcon size={16} weight="bold" /> Comprar
                   </button>
                 )}
                 <a className="btn btn-wa" target="_blank" rel="noopener noreferrer"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { CheckIcon, ShieldCheckIcon, ShoppingCartIcon, WhatsappLogoIcon, XIcon } from '@phosphor-icons/react';
 import { consultar, garantia, pesos } from '../lib/contacto';
@@ -56,6 +56,19 @@ export default function Vidriera({ productos }) {
   }
   const cerrar = () => ficha.current.close();
 
+  // Si la dirección termina en #<id> (viene del buscador), se abre la ficha de ese producto
+  useEffect(() => {
+    const desdeDireccion = () => {
+      const p = productos.find(p => p.id === decodeURIComponent(location.hash.slice(1)));
+      if (p && !ficha.current.open) abrir(p);
+    };
+    desdeDireccion();
+    window.addEventListener('hashchange', desdeDireccion);
+    return () => window.removeEventListener('hashchange', desdeDireccion);
+  }, [productos]);
+  // Al cerrar la ficha se saca el #, así el mismo resultado se puede volver a abrir
+  const alCerrar = () => location.hash && history.replaceState(null, '', location.pathname + location.search);
+
   return (
     <>
       <div className="vidriera">
@@ -81,7 +94,7 @@ export default function Vidriera({ productos }) {
       </div>
 
       {/* Click en el fondo oscuro cierra la ficha */}
-      <dialog ref={ficha} className="ficha" aria-labelledby="ficha-titulo" onClick={e => e.target === ficha.current && cerrar()}>
+      <dialog ref={ficha} className="ficha" aria-labelledby="ficha-titulo" onClick={e => e.target === ficha.current && cerrar()} onClose={alCerrar}>
         {elegido && (
           <div className="ficha-grid">
             <div className="ficha-fotos" style={fondo ? { background: fondo } : undefined}>

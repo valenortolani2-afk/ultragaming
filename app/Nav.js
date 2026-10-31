@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { WhatsappLogoIcon } from '@phosphor-icons/react';
 import { whatsapp } from '../lib/contacto';
 import { BotonCarrito } from './Carrito';
+import Buscador from './Buscador';
 
 const links = [
   { href: '#ofertas', texto: 'Ofertas' },
@@ -45,6 +46,7 @@ export default function Nav() {
           ))}
         </div>
         <div className="nav-acciones">
+          <Buscador />
           <a href={whatsapp.link} className="btn-icono" target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${whatsapp.texto}`}>
             <WhatsappLogoIcon size={16} />
           </a>

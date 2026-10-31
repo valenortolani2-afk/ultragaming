@@ -7,6 +7,7 @@ import { listarPublicaciones } from '../../../lib/publicaciones';
 import { consultar, garantia, whatsapp } from '../../../lib/contacto';
 import Vidriera from '../../Vidriera';
 import { BotonCarrito } from '../../Carrito';
+import Buscador from '../../Buscador';
 
 // Se arma en cada visita para mostrar al instante lo que se sube desde /admin
 export const dynamic = 'force-dynamic';
@@ -27,9 +28,10 @@ export default async function PaginaCategoria({ params }) {
       <nav className="nav arriba" aria-label="Principal">
         <Link href="/" className="logo" aria-label="Ultra Gaming, inicio">ULTRA<span>GAMING</span></Link>
         <div className="nav-links nav-links-fijos">
-          <Link href="/#ofertas"><ArrowLeftIcon size={14} /> Todas las categorías</Link>
+          <Link href="/#ofertas" aria-label="Todas las categorías"><ArrowLeftIcon size={14} /> <span>Todas las categorías</span></Link>
         </div>
         <div className="nav-acciones">
+          <Buscador />
           <a href={whatsapp.link} className="btn-icono" target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${whatsapp.texto}`}>
             <WhatsappLogoIcon size={16} />
           </a>

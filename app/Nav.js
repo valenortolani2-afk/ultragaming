@@ -8,6 +8,7 @@ import Buscador from './Buscador';
 
 const links = [
   { href: '#ofertas', texto: 'Ofertas' },
+  { href: '/arma-tu-pc', texto: 'Armá tu PC', clase: 'destacado' },
   { href: '#garantia', texto: 'Garantía' },
   { href: '#preguntas', texto: 'Preguntas' },
   { href: '#local', texto: 'El local' }
@@ -23,7 +24,7 @@ export default function Nav() {
     const secciones = new IntersectionObserver(entradas => {
       entradas.forEach(e => e.isIntersecting && setActivo(e.target.id ? '#' + e.target.id : ''));
     }, { rootMargin: '-45% 0px -50% 0px' });
-    [...links.map(l => document.querySelector(l.href)), document.querySelector('.hero')]
+    [...links.filter(l => l.href.startsWith('#')).map(l => document.querySelector(l.href)), document.querySelector('.hero')]
       .forEach(s => s && secciones.observe(s));
 
     // Cuando la franja azul sale de pantalla, la barra sube al borde
@@ -42,7 +43,7 @@ export default function Nav() {
         <a href="#contenido" className="logo" aria-label="Ultra Gaming, inicio">ULTRA<span>GAMING</span></a>
         <div className="nav-links">
           {links.map(l => (
-            <a key={l.href} href={l.href} className={activo === l.href ? 'activo' : ''} aria-current={activo === l.href ? 'true' : undefined}>{l.texto}</a>
+            <a key={l.href} href={l.href} className={activo === l.href ? 'activo' : l.clase} aria-current={activo === l.href ? 'true' : undefined}>{l.texto}</a>
           ))}
         </div>
         <div className="nav-acciones">
@@ -59,7 +60,7 @@ export default function Nav() {
 
       <div className={'menu-movil' + (menu ? ' abierto' : '')} aria-hidden={!menu} inert={!menu}>
         {links.map((l, i) => (
-          <a key={l.href} href={l.href} onClick={() => setMenu(false)} style={{ transitionDelay: menu ? `${Math.min(i * 60, 400)}ms` : '0ms' }}>{l.texto}</a>
+          <a key={l.href} href={l.href} className={l.clase} onClick={() => setMenu(false)} style={{ transitionDelay: menu ? `${Math.min(i * 60, 400)}ms` : '0ms' }}>{l.texto}</a>
         ))}
       </div>
     </>

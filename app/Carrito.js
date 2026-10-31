@@ -45,12 +45,18 @@ export function CarritoProvider({ children }) {
   const abrir = () => { setError(''); setPaso('carrito'); panel.current?.showModal(); };
   const cerrar = () => panel.current?.close();
 
+  function sumar(lista, p) {
+    const ya = lista.find(i => i.id === p.id);
+    if (ya) return lista.map(i => i.id === p.id ? { ...i, cantidad: Math.min(i.cantidad + 1, maximo) } : i);
+    return [...lista, { id: p.id, slug: p.slug, nombre: p.nombre, precio: p.precio, foto: p.fotos[0], cantidad: 1 }];
+  }
   function agregar(p) {
-    setItems(lista => {
-      const ya = lista.find(i => i.id === p.id);
-      if (ya) return lista.map(i => i.id === p.id ? { ...i, cantidad: Math.min(i.cantidad + 1, maximo) } : i);
-      return [...lista, { id: p.id, slug: p.slug, nombre: p.nombre, precio: p.precio, foto: p.fotos[0], cantidad: 1 }];
-    });
+    setItems(lista => sumar(lista, p));
+    abrir();
+  }
+  // Para el armador de PC: suma todas las piezas de una vez
+  function agregarVarios(ps) {
+    setItems(lista => ps.reduce(sumar, lista));
     abrir();
   }
   const cambiar = (id, cantidad) => setItems(lista => lista.map(i => i.id === id ? { ...i, cantidad: Math.max(1, Math.min(cantidad, maximo)) } : i));
@@ -85,7 +91,7 @@ export function CarritoProvider({ children }) {
   }
 
   return (
-    <Contexto.Provider value={{ items, unidades, agregar, abrir, vaciar }}>
+    <Contexto.Provider value={{ items, unidades, agregar, agregarVarios, abrir, vaciar }}>
       {children}
 
       <dialog ref={panel} className="carrito" aria-labelledby="carrito-titulo" onClick={e => e.target === panel.current && cerrar()}>

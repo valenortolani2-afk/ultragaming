@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  ChatsCircleIcon, HandPointingIcon, InstagramLogoIcon, PlusIcon, ShieldCheckIcon, StarFourIcon, StorefrontIcon,
+  ArrowRightIcon, ChatsCircleIcon, CpuIcon, HandPointingIcon, InstagramLogoIcon, PlusIcon, ShieldCheckIcon, StarFourIcon, StorefrontIcon,
   TruckIcon, WhatsappLogoIcon, WrenchIcon
 } from '@phosphor-icons/react/dist/ssr';
 import { consultar, garantiaNuevos, garantiaOutlet, instagram, marcas, whatsapp } from '../lib/contacto';
@@ -106,6 +106,14 @@ export default async function Inicio() {
                 </Link>
               ))}
             </div>
+            <Link href="/arma-tu-pc" className="armado-cta">
+              <CpuIcon size={40} weight="light" />
+              <span>
+                <strong>Armá tu PC</strong>
+                <span>Elegí procesador, mother, memoria, placa de video, disco, gabinete y fuente entre nuestro stock. Te mostramos solo lo que es compatible.</span>
+              </span>
+              <span className="btn btn-comprar">Empezar <ArrowRightIcon size={16} weight="bold" /></span>
+            </Link>
           </div>
         </section>
 

@@ -1,5 +1,5 @@
 import {
-  blobConfigurado, borrarPublicacion, claveValida, esDeBlob, guardarPublicacion, listarCostos, listarPublicaciones, ordenarFotos
+  blobConfigurado, borrarPublicacion, claveValida, editarPublicacion, esDeBlob, guardarPublicacion, listarCostos, listarPublicaciones, ordenarFotos
 } from '../../../lib/publicaciones';
 import { buscarCategoria } from '../../../lib/categorias';
 
@@ -40,15 +40,27 @@ export async function POST(request) {
   return Response.json(publicacion);
 }
 
-// Cambia el orden de las fotos de un producto
+// Cambia el orden de las fotos de un producto (si llegan fotos) o sus datos: título, precio, costo, descripción y garantía
 export async function PATCH(request) {
   if (!blobConfigurado()) return error('Falta conectar Vercel Blob (BLOB_READ_WRITE_TOKEN)', 500);
-  const { clave, url, fotos } = await request.json().catch(() => ({}));
+  const { clave, url, fotos, nombre, precio, costo, descripcion, garantia } = await request.json().catch(() => ({}));
   if (!claveValida(clave)) return error('Contraseña incorrecta', 401);
   if (!esDeBlob(url) || !new URL(url).pathname.startsWith('/publicaciones/')) return error('Producto inválido', 400);
-  if (!Array.isArray(fotos) || !fotos.length || !fotos.every(esDeBlob)) return error('Fotos inválidas', 400);
   try {
-    return Response.json(await ordenarFotos(url, fotos));
+    if (fotos !== undefined) {
+      if (!Array.isArray(fotos) || !fotos.length || !fotos.every(esDeBlob)) return error('Fotos inválidas', 400);
+      return Response.json(await ordenarFotos(url, fotos));
+    }
+    if (!nombre?.trim()) return error('Escribí un título', 400);
+    if (!(Number(precio) > 0)) return error('El precio de venta tiene que ser un número mayor a cero', 400);
+    if (costo != null && costo !== '' && !(Number(costo) >= 0)) return error('El precio de costo tiene que ser un número', 400);
+    return Response.json(await editarPublicacion(url, {
+      nombre: nombre.trim().slice(0, 120),
+      precio,
+      costo: costo ?? undefined,
+      descripcion: (descripcion || '').trim().slice(0, 5000),
+      garantia: (garantia || '').trim().slice(0, 40)
+    }));
   } catch (err) {
     return error(err.message, 400);
   }

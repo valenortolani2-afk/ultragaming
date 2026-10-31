@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { upload } from '@vercel/blob/client';
 import {
-  CaretLeftIcon, CaretRightIcon, CurrencyDollarIcon, ImagesIcon, PackageIcon, ReceiptIcon, StarIcon, TrashIcon, UploadSimpleIcon
+  CaretLeftIcon, CaretRightIcon, CurrencyDollarIcon, ImagesIcon, PackageIcon, PencilSimpleIcon, ReceiptIcon, StarIcon, TrashIcon,
+  UploadSimpleIcon
 } from '@phosphor-icons/react';
 import { pesos } from '../../lib/contacto';
 
@@ -27,6 +28,9 @@ export default function Panel({ categorias, garantiaBase }) {
   // Producto al que se le está cambiando el orden de las fotos
   const [editando, setEditando] = useState(null);
   const [guardandoOrden, setGuardandoOrden] = useState(false);
+  // Producto al que se le están editando título, precios, descripción o garantía
+  const [datos, setDatos] = useState(null);
+  const [guardandoDatos, setGuardandoDatos] = useState(false);
 
   // Vistas previas de las fotos elegidas para publicar
   const [previas, setPrevias] = useState([]);
@@ -102,6 +106,30 @@ export default function Panel({ categorias, garantiaBase }) {
     setEstado(`Orden de fotos guardado: ${editando.nombre}`);
     setLista(l => l.map(p => p.url === editando.url ? { ...p, fotos: editando.fotos } : p));
     setEditando(null);
+  }
+
+  function abrirDatos(p) {
+    setDatos(datos?.url === p.url ? null : {
+      url: p.url, nombre: p.nombre, precio: String(p.precio), costo: p.costo == null ? '' : String(p.costo),
+      descripcion: p.descripcion || '', garantia: p.garantia, conCosto: 'costo' in p
+    });
+  }
+
+  async function guardarDatos(e) {
+    e.preventDefault();
+    setError('');
+    setGuardandoDatos(true);
+    const { url, nombre, precio, costo, descripcion, garantia, conCosto } = datos;
+    const r = await fetch('/api/publicaciones', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clave, url, nombre, precio, descripcion, garantia, ...(conCosto && { costo }) })
+    });
+    setGuardandoDatos(false);
+    if (!r.ok) return setError((await r.json()).error);
+    setEstado(`Cambios guardados: ${nombre}`);
+    setDatos(null);
+    cargarLista();
   }
 
   async function borrar(p) {
@@ -227,6 +255,9 @@ export default function Panel({ categorias, garantiaBase }) {
                     {'costo' in p && (p.costo === null ? ' · Sin costo cargado' : ` · Costo ${pesos(p.costo)} · Ganancia ${pesos(p.precio - p.costo)}`)}
                     {' '}· Garantía {p.garantia} · {p.fotos.length} {p.fotos.length === 1 ? 'foto' : 'fotos'}</span>
                 </div>
+                <button className="btn-icono" aria-label={`Editar ${p.nombre}`} aria-expanded={datos?.url === p.url} onClick={() => abrirDatos(p)}>
+                  <PencilSimpleIcon size={16} />
+                </button>
                 {p.fotos.length > 1 && (
                   <button className="btn-icono" aria-label={`Ordenar las fotos de ${p.nombre}`} aria-expanded={editando?.url === p.url}
                     onClick={() => setEditando(editando?.url === p.url ? null : { url: p.url, nombre: p.nombre, fotos: p.fotos })}>
@@ -246,6 +277,34 @@ export default function Panel({ categorias, garantiaBase }) {
                       <button className="btn btn-gris btn-chico" onClick={() => setEditando(null)}>Cancelar</button>
                     </div>
                   </section>
+                )}
+                {datos?.url === p.url && (
+                  <form className="formulario editor-datos" onSubmit={guardarDatos} aria-label={`Editar ${p.nombre}`}>
+                    <label>Título
+                      <input value={datos.nombre} onChange={e => setDatos(d => ({ ...d, nombre: e.target.value }))} maxLength={120} required />
+                    </label>
+                    {datos.conCosto && (
+                      <label>Precio de costo en pesos (solo lo ves vos)
+                        <input type="number" min="0" step="1" inputMode="numeric" value={datos.costo} onChange={e => setDatos(d => ({ ...d, costo: e.target.value }))} />
+                      </label>
+                    )}
+                    <label>Precio de venta en pesos
+                      <input type="number" min="1" step="1" inputMode="numeric" value={datos.precio} onChange={e => setDatos(d => ({ ...d, precio: e.target.value }))} required />
+                    </label>
+                    {datos.conCosto && datos.costo !== '' && datos.precio !== '' && (
+                      <p className="nota">Ganancia: {pesos(Number(datos.precio) - Number(datos.costo))}</p>
+                    )}
+                    <label>Garantía
+                      <input value={datos.garantia} onChange={e => setDatos(d => ({ ...d, garantia: e.target.value }))} maxLength={40} required />
+                    </label>
+                    <label>Descripción
+                      <textarea value={datos.descripcion} onChange={e => setDatos(d => ({ ...d, descripcion: e.target.value }))} maxLength={5000} rows={10} />
+                    </label>
+                    <div className="editor-acciones">
+                      <button className="btn btn-azul btn-chico" disabled={guardandoDatos}>{guardandoDatos ? 'Guardando' : 'Guardar cambios'}</button>
+                      <button type="button" className="btn btn-gris btn-chico" onClick={() => setDatos(null)}>Cancelar</button>
+                    </div>
+                  </form>
                 )}
               </li>
             ))}

@@ -329,7 +329,8 @@ img { display: block; }
 .lista-admin h4 { font-size: 14px; line-height: 20px; font-weight: 500; }
 .lista-admin span { color: var(--gris); font-size: 12px; line-height: 16px; }
 .lista-admin .btn { flex: none; padding: 4px 12px; }
-.lista-admin li:has(.editor-fotos) { flex-wrap: wrap; }
+.lista-admin li:has(.editor-fotos), .lista-admin li:has(.editor-datos) { flex-wrap: wrap; }
+.lista-admin .editor-datos { flex-basis: 100%; padding: 12px 0 0; background: none; border: 0; border-top: 1px solid var(--borde); border-radius: 0; }
 .lista-admin .editor-fotos { flex-basis: 100%; display: grid; gap: 12px; padding-top: 12px; border-top: 1px solid var(--borde); }
 .editor-acciones { display: flex; gap: 8px; }
 

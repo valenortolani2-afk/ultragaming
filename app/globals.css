@@ -530,3 +530,10 @@ img { display: block; }
   /* En celular la foto del local deja lugar abajo para los puntos */
   .carrusel .diapo-inicio .hero-panel { margin-bottom: 32px; }
 }
+
+/* Fotos que rotan en las tarjetas de categoría */
+.foto-rotativa { opacity: 0; transition: opacity 900ms var(--curva), transform 500ms var(--curva); }
+.foto-rotativa.activa { opacity: 1; }
+.rotativa-puntos { position: absolute; z-index: 1; top: 12px; right: 12px; display: flex; gap: 4px; padding: 6px 8px; border-radius: 9999px; background: rgba(5, 11, 20, .6); }
+.rotativa-puntos i { width: 6px; height: 6px; border-radius: 9999px; background: rgba(255, 255, 255, .45); transition: width 300ms var(--curva), background-color 300ms var(--curva); }
+.rotativa-puntos i.activo { width: 14px; background: #fff; }

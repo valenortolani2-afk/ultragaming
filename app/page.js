@@ -8,7 +8,8 @@ import { consultar, garantiaNuevos, garantiaOutlet, instagram, marcas, whatsapp 
 import { categorias } from '../lib/categorias';
 import Nav from './Nav';
 import Carrusel from './Carrusel';
-import { listarBanners } from '../lib/publicaciones';
+import { listarBanners, listarPublicaciones } from '../lib/publicaciones';
+import FotosRotativas from './FotosRotativas';
 import { FraseReveladora, Revelar } from './Revelar';
 
 const cinta = [
@@ -46,7 +47,13 @@ const preguntas = [
 export const dynamic = 'force-dynamic';
 
 export default async function Inicio() {
-  const banners = await listarBanners();
+  const [banners, publicaciones] = await Promise.all([listarBanners(), listarPublicaciones()]);
+  // Portada de cada producto publicado, agrupadas por categoría (hasta 8, de la más nueva a la más vieja)
+  const fotosPorCategoria = {};
+  for (const p of publicaciones) {
+    const lista = (fotosPorCategoria[p.slug] ??= []);
+    if (p.fotos?.[0] && lista.length < 8) lista.push(p.fotos[0]);
+  }
   return (
     <>
       <div className="franja">{garantiaNuevos} de garantía en nuevos · {garantiaOutlet} en outlet · Envíos a todo el país</div>
@@ -91,9 +98,10 @@ export default async function Inicio() {
             <h2 className="titulo">Tocá un producto para ver todo</h2>
             {/* Cada tarjeta lleva a la página con todas las publicaciones de esa categoría */}
             <div className="vidriera">
-              {categorias.map(c => (
+              {categorias.map((c, i) => (
                 <Link key={c.slug} href={`/categoria/${c.slug}`} className="tarjeta">
-                  <Image src={c.foto} alt="" fill sizes="(max-width: 720px) 100vw, 400px" className="tarjeta-foto" />
+                  {/* Rota entre las fotos de los productos publicados; sin productos, queda la foto de la categoría */}
+                  <FotosRotativas fotos={fotosPorCategoria[c.slug] || [c.foto]} desfase={i * 500} />
                   <span className="tarjeta-info"><strong>{c.titulo}</strong></span>
                 </Link>
               ))}

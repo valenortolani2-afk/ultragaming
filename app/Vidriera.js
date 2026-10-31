@@ -5,6 +5,9 @@ import Image from 'next/image';
 import { CheckIcon, ShieldCheckIcon, ShoppingCartIcon, WhatsappLogoIcon, XIcon } from '@phosphor-icons/react';
 import { consultar, garantia, pesos } from '../lib/contacto';
 import { useCarrito } from './Carrito';
+import { marcaDe } from '../lib/marcas';
+
+const otras = 'Otras marcas';
 
 const precioTexto = p => (p.desde ? 'Desde ' : '') + pesos(p.precio);
 
@@ -69,10 +72,49 @@ export default function Vidriera({ productos }) {
   // Al cerrar la ficha se saca el #, así el mismo resultado se puede volver a abrir
   const alCerrar = () => location.hash && history.replaceState(null, '', location.pathname + location.search);
 
+  // Menú por marca: las marcas de estos productos, de la que más tiene a la que menos
+  const [marca, setMarca] = useState(null);
+  const cuenta = {};
+  for (const p of productos) { const m = marcaDe(p) || otras; cuenta[m] = (cuenta[m] || 0) + 1; }
+  const marcasMenu = Object.keys(cuenta).sort((a, b) => (a === otras) - (b === otras) || cuenta[b] - cuenta[a] || a.localeCompare(b));
+  const visibles = marca ? productos.filter(p => (marcaDe(p) || otras) === marca) : productos;
+
+  // La marca elegida queda en la dirección (?marca=ASUS) para poder compartirla o volver con el botón atrás
+  useEffect(() => {
+    const desdeDireccion = () => {
+      const m = new URLSearchParams(location.search).get('marca');
+      setMarca(m && cuenta[m] ? m : null);
+    };
+    desdeDireccion();
+    window.addEventListener('popstate', desdeDireccion);
+    return () => window.removeEventListener('popstate', desdeDireccion);
+  }, [productos]);
+  function elegirMarca(m) {
+    setMarca(m);
+    const url = new URL(location.href);
+    if (m) url.searchParams.set('marca', m); else url.searchParams.delete('marca');
+    history.pushState(null, '', url.pathname + url.search);
+  }
+
   return (
     <>
+      {marcasMenu.length > 1 && (
+        <nav className="menu-marcas" aria-label="Filtrar por marca">
+          <span className="menu-marcas-titulo">Marcas</span>
+          <div className="filtros">
+            <button className={`filtro${marca === null ? ' activo' : ''}`} aria-pressed={marca === null} onClick={() => elegirMarca(null)}>
+              Todas <span className="cuenta">{productos.length}</span>
+            </button>
+            {marcasMenu.map(m => (
+              <button key={m} className={`filtro${marca === m ? ' activo' : ''}`} aria-pressed={marca === m} onClick={() => elegirMarca(m)}>
+                {m} <span className="cuenta">{cuenta[m]}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+      )}
       <div className="vidriera">
-        {productos.map(p => (
+        {visibles.map(p => (
           <article key={p.id} className="producto">
             {/* En la tarjeta van la foto y el título; el resto se ve al tocarla */}
             <button className="tarjeta" onClick={() => abrir(p)} aria-haspopup="dialog" aria-label={`Ver ${p.nombre}`}>

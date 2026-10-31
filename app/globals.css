@@ -537,3 +537,17 @@ img { display: block; }
 .rotativa-puntos { position: absolute; z-index: 1; top: 12px; right: 12px; display: flex; gap: 4px; padding: 6px 8px; border-radius: 9999px; background: rgba(5, 11, 20, .6); }
 .rotativa-puntos i { width: 6px; height: 6px; border-radius: 9999px; background: rgba(255, 255, 255, .45); transition: width 300ms var(--curva), background-color 300ms var(--curva); }
 .rotativa-puntos i.activo { width: 14px; background: #fff; }
+
+/* Menú por marca arriba de los productos de una categoría */
+.menu-marcas { display: grid; gap: 8px; margin-bottom: 24px; }
+.menu-marcas-titulo { color: var(--gris); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.menu-marcas .filtros { margin-bottom: 0; }
+.menu-marcas .filtro { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; }
+.menu-marcas .cuenta { min-width: 20px; padding: 0 6px; border-radius: 9999px; background: var(--sup2); color: var(--gris); font-size: 12px; line-height: 18px; text-align: center; }
+.menu-marcas .filtro.activo .cuenta { background: rgba(0, 0, 0, .12); color: inherit; }
+@media (max-width: 720px) {
+  /* En celular las marcas van en una fila que se desliza de costado */
+  .menu-marcas .filtros { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px; scrollbar-width: none; }
+  .menu-marcas .filtros::-webkit-scrollbar { display: none; }
+  .menu-marcas .filtro { flex: none; }
+}

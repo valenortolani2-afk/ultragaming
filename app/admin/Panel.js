@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { upload } from '@vercel/blob/client';
 import {
   CaretLeftIcon, CaretRightIcon, CurrencyDollarIcon, ImagesIcon, PackageIcon, PencilSimpleIcon, ReceiptIcon, StarIcon, TrashIcon,
-  UploadSimpleIcon
+  UploadSimpleIcon, WhatsappLogoIcon
 } from '@phosphor-icons/react';
-import { pesos } from '../../lib/contacto';
+import { escribirA, pesos } from '../../lib/contacto';
 
 export default function Panel({ categorias, garantiaBase }) {
   const [clave, setClave] = useState('');
@@ -347,6 +347,18 @@ function OrdenFotos({ srcs, onOrden }) {
   );
 }
 
+// Teléfono del comprador: abre WhatsApp con un mensaje sobre su compra, sin tener que agendarlo
+function Telefono({ venta }) {
+  const { nombre, telefono } = venta.cliente;
+  const link = escribirA(telefono, `Hola ${nombre}, te escribimos de Ultra Gaming por tu compra de "${venta.nombre}".`);
+  if (!link) return <span>Tel. {telefono}</span>;
+  return (
+    <a href={link} target="_blank" rel="noopener noreferrer" className="link-wa" aria-label={`Escribirle por WhatsApp a ${nombre} al ${telefono}`}>
+      <WhatsappLogoIcon size={14} weight="fill" /> {telefono}
+    </a>
+  );
+}
+
 const fecha = iso => new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
 // Resumen y detalle de las ventas registradas
@@ -388,7 +400,8 @@ function Ventas({ ventas, onBorrar }) {
                   {v.cliente ? (
                     <>
                       <strong>{v.cliente.nombre} {v.cliente.apellido}</strong>
-                      <span>DNI {v.cliente.dni} · Tel. {v.cliente.telefono}</span>
+                      <span>DNI {v.cliente.dni}</span>
+                      <Telefono venta={v} />
                       <span>{v.cliente.direccion}, {v.cliente.localidad} (CP {v.cliente.codigoPostal})</span>
                       {v.comprador && <span>{v.comprador}</span>}
                     </>

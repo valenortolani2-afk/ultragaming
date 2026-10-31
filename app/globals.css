@@ -459,3 +459,7 @@ img { display: block; }
   *, *::before, *::after { transition-property: opacity, color, background-color !important; }
   .revelar, .menu-movil a, .ficha { transform: none !important; }
 }
+
+/* Teléfono del comprador como link a WhatsApp */
+.tabla-ventas .link-wa { display: inline-flex; align-items: center; gap: 4px; width: max-content; color: var(--wa); font-size: 12px; line-height: 16px; font-weight: 600; }
+.tabla-ventas .link-wa:hover { text-decoration: underline; }

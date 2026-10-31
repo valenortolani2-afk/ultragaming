@@ -98,6 +98,8 @@ export default function Vidriera({ productos }) {
 
   return (
     <>
+      {/* Con varias marcas, el menú va en una columna a la izquierda de las publicaciones (arriba en celular) */}
+      <div className={marcasMenu.length > 1 ? 'catalogo con-marcas' : 'catalogo'}>
       {marcasMenu.length > 1 && (
         <nav className="menu-marcas" aria-label="Filtrar por marca">
           <span className="menu-marcas-titulo">Marcas</span>
@@ -133,6 +135,7 @@ export default function Vidriera({ productos }) {
             </div>
           </article>
         ))}
+      </div>
       </div>
 
       {/* Click en el fondo oscuro cierra la ficha */}

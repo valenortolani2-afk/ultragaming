@@ -538,16 +538,21 @@ img { display: block; }
 .rotativa-puntos i { width: 6px; height: 6px; border-radius: 9999px; background: rgba(255, 255, 255, .45); transition: width 300ms var(--curva), background-color 300ms var(--curva); }
 .rotativa-puntos i.activo { width: 14px; background: #fff; }
 
-/* Menú por marca arriba de los productos de una categoría */
-.menu-marcas { display: grid; gap: 8px; margin-bottom: 24px; }
+/* Menú por marca: columna a la izquierda de las publicaciones; en celular, fila arriba */
+.catalogo.con-marcas { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; align-items: start; }
+.menu-marcas { position: sticky; top: 96px; display: grid; gap: 12px; padding: 16px; border-radius: 16px; background: var(--sup1); border: 1px solid var(--borde); max-height: calc(100vh - 120px); overflow-y: auto; }
 .menu-marcas-titulo { color: var(--gris); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
-.menu-marcas .filtros { margin-bottom: 0; }
-.menu-marcas .filtro { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; }
-.menu-marcas .cuenta { min-width: 20px; padding: 0 6px; border-radius: 9999px; background: var(--sup2); color: var(--gris); font-size: 12px; line-height: 18px; text-align: center; }
+.menu-marcas .filtros { flex-direction: column; flex-wrap: nowrap; gap: 4px; margin-bottom: 0; }
+.menu-marcas .filtro { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 8px 12px; border-radius: 10px; border-color: transparent; text-align: left; }
+.menu-marcas .filtro:hover { background: var(--sup2); }
+.menu-marcas .filtro.activo:hover { background: var(--texto); }
+.menu-marcas .cuenta { min-width: 24px; padding: 0 6px; border-radius: 9999px; background: var(--sup2); color: var(--gris); font-size: 12px; line-height: 18px; text-align: center; }
 .menu-marcas .filtro.activo .cuenta { background: rgba(0, 0, 0, .12); color: inherit; }
-@media (max-width: 720px) {
-  /* En celular las marcas van en una fila que se desliza de costado */
-  .menu-marcas .filtros { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px; scrollbar-width: none; }
+@media (max-width: 960px) {
+  .catalogo.con-marcas { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .menu-marcas { position: static; max-height: none; overflow: visible; padding: 0; background: none; border: none; }
+  /* Las marcas van en una fila que se desliza de costado */
+  .menu-marcas .filtros { flex-direction: row; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px; scrollbar-width: none; }
   .menu-marcas .filtros::-webkit-scrollbar { display: none; }
-  .menu-marcas .filtro { flex: none; }
+  .menu-marcas .filtro { flex: none; width: auto; padding: 6px 14px; border-radius: 9999px; border-color: var(--borde2); }
 }

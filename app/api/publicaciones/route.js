@@ -33,7 +33,7 @@ export async function POST(request) {
     nombre: nombre.trim().slice(0, 120),
     precio,
     costo,
-    descripcion: (descripcion || '').trim().slice(0, 1500),
+    descripcion: (descripcion || '').trim().slice(0, 5000),
     garantia: (garantia || '').trim().slice(0, 40),
     fotos
   });

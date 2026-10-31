@@ -198,7 +198,7 @@ export default function Panel({ categorias, garantiaBase }) {
           <input value={garantia} onChange={e => setGarantia(e.target.value)} maxLength={40} required />
         </label>
         <label>Descripción
-          <textarea value={descripcion} onChange={e => setDescripcion(e.target.value)} maxLength={1500} rows={5} placeholder="Estado, componentes, qué incluye" />
+          <textarea value={descripcion} onChange={e => setDescripcion(e.target.value)} maxLength={5000} rows={10} placeholder="Estado, componentes, qué incluye" />
         </label>
         <label>Fotos (hasta 8, máximo 10 MB cada una)
           <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple onChange={e => setArchivos([...e.target.files])} required />

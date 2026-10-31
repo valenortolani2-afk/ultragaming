@@ -7,6 +7,8 @@ import {
 import { consultar, garantiaNuevos, garantiaOutlet, instagram, marcas, whatsapp } from '../lib/contacto';
 import { categorias } from '../lib/categorias';
 import Nav from './Nav';
+import Carrusel from './Carrusel';
+import { listarBanners } from '../lib/publicaciones';
 import { FraseReveladora, Revelar } from './Revelar';
 
 const cinta = [
@@ -40,14 +42,18 @@ const preguntas = [
   ['¿Hacen servicio técnico?', 'Sí. Reparamos, limpiamos y actualizamos computadoras. Escribinos y te pasamos un presupuesto.']
 ];
 
-export default function Inicio() {
+// Se arma en cada visita para mostrar al instante los banners que se suben desde /admin
+export const dynamic = 'force-dynamic';
+
+export default async function Inicio() {
+  const banners = await listarBanners();
   return (
     <>
       <div className="franja">{garantiaNuevos} de garantía en nuevos · {garantiaOutlet} en outlet · Envíos a todo el país</div>
       <Nav />
 
       <main id="contenido">
-        <section className="hero">
+        <Carrusel banners={banners}>
           <Image src="/local-ultra-gaming.jpg" alt="Frente del local de Ultra Gaming con el cartel del pulpo" fill priority sizes="100vw" className="hero-foto" />
           <div className="contenedor">
             <div className="hero-panel">
@@ -62,7 +68,7 @@ export default function Inicio() {
               </div>
             </div>
           </div>
-        </section>
+        </Carrusel>
 
         {/* Cinta en movimiento con lo que ofrece el local. Va dos veces seguida para que el giro no tenga cortes. */}
         <div className="cinta" role="region" aria-label="Lo que te ofrecemos">

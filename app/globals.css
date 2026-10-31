@@ -486,3 +486,47 @@ img { display: block; }
 /* Teléfono del comprador como link a WhatsApp */
 .tabla-ventas .link-wa { display: inline-flex; align-items: center; gap: 4px; width: max-content; color: var(--wa); font-size: 12px; line-height: 16px; font-weight: 600; }
 .tabla-ventas .link-wa:hover { text-decoration: underline; }
+
+/* Banners en el panel */
+.banners-admin { display: grid; gap: 24px; }
+.formulario label.subir-banner { display: inline-flex; width: max-content; cursor: pointer; }
+.subir-banner.deshabilitado { opacity: .5; cursor: not-allowed; }
+.lista-banners { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.lista-banners li { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; padding: 12px; border-radius: 12px; background: var(--sup1); border: 1px solid var(--borde); }
+.lista-banners img { grid-column: 1 / -1; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #000; border-radius: 8px; }
+.lista-banners div { display: grid; }
+.lista-banners strong { font-size: 14px; line-height: 20px; font-weight: 500; }
+.lista-banners span { color: var(--gris); font-size: 12px; line-height: 16px; }
+
+/* Carrusel de la portada: foto del local + banners que se suben desde /admin */
+.carrusel .diapo { transition: opacity 800ms var(--curva), visibility 800ms; }
+.carrusel .diapo:not(.activa) { opacity: 0; visibility: hidden; }
+.carrusel .diapo-inicio { width: 100%; }
+/* clip: el fondo agrandado no puede correr la portada hacia el costado al tocar los botones */
+.carrusel { overflow: clip; }
+.carrusel .diapo-banner { position: absolute; inset: 0; z-index: 2; overflow: hidden; background: #05080d; }
+.banner-fondo { object-fit: cover; filter: blur(40px) brightness(.6) saturate(1.2); transform: scale(1.2); }
+.banner-marco { position: absolute; inset: 104px 72px 56px; }
+.banner-foto { object-fit: contain; filter: drop-shadow(0 16px 40px rgba(0, 0, 0, .5)); }
+.carrusel-flecha {
+  position: absolute; z-index: 3; top: 50%; transform: translateY(-50%); display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: 9999px; border: 1px solid var(--borde2); cursor: pointer;
+  background: rgba(5, 11, 20, .7); color: var(--texto); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: background-color 300ms var(--curva);
+}
+.carrusel-flecha:hover { background: var(--azul-fondo); }
+.carrusel-flecha.anterior { left: 16px; }
+.carrusel-flecha.siguiente { right: 16px; }
+.carrusel-puntos { position: absolute; z-index: 3; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; gap: 8px; }
+.carrusel-puntos button {
+  width: 10px; height: 10px; padding: 0; border-radius: 9999px; border: none; cursor: pointer;
+  background: rgba(255, 255, 255, .45); transition: width 300ms var(--curva), background-color 300ms var(--curva);
+}
+.carrusel-puntos button.activo { width: 28px; background: #ffd60a; }
+@media (max-width: 720px) {
+  .banner-marco { inset: 88px 0 44px; }
+  .carrusel-flecha { width: 36px; height: 36px; top: auto; bottom: 8px; transform: none; }
+  .carrusel-puntos { bottom: 21px; }
+  /* En celular la foto del local deja lugar abajo para los puntos */
+  .carrusel .diapo-inicio .hero-panel { margin-bottom: 32px; }
+}

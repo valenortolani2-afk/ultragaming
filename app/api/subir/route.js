@@ -12,7 +12,8 @@ export async function POST(request) {
       onBeforeGenerateToken: async (pathname, clave) => {
         const [carpeta, categoria] = pathname.split('/');
         if (!claveValida(clave)) throw new Error('Contraseña incorrecta');
-        if (carpeta !== 'fotos' || !buscarCategoria(categoria)) throw new Error('Categoría inválida');
+        // Fotos de productos van en fotos/<categoría>/ y los banners de la portada en banners/
+        if (carpeta === 'fotos' ? !buscarCategoria(categoria) : carpeta !== 'banners') throw new Error('Categoría inválida');
         return {
           allowedContentTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
           maximumSizeInBytes: 10 * 1024 * 1024,

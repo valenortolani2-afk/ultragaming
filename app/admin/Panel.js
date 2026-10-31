@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { upload } from '@vercel/blob/client';
 import {
-  CaretLeftIcon, CaretRightIcon, CurrencyDollarIcon, ImagesIcon, PackageIcon, PencilSimpleIcon, ReceiptIcon, StarIcon, TrashIcon,
+  CaretLeftIcon, CaretRightIcon, CurrencyDollarIcon, ImageIcon, ImagesIcon, PackageIcon, PencilSimpleIcon, ReceiptIcon, StarIcon, TrashIcon,
   UploadSimpleIcon, WhatsappLogoIcon
 } from '@phosphor-icons/react';
 import { escribirA, pesos } from '../../lib/contacto';
@@ -197,12 +197,16 @@ export default function Panel({ categorias, garantiaBase }) {
           <button role="tab" aria-selected={vista === 'ventas'} className={`filtro${vista === 'ventas' ? ' activo' : ''}`} onClick={() => setVista('ventas')}>
             <ReceiptIcon size={16} /> Ventas
           </button>
+          <button role="tab" aria-selected={vista === 'banners'} className={`filtro${vista === 'banners' ? ' activo' : ''}`} onClick={() => setVista('banners')}>
+            <ImageIcon size={16} /> Banners
+          </button>
         </div>
       </div>
       {estado && <p className="nota" role="status">{estado}</p>}
       {error && <p className="error" role="alert">{error}</p>}
 
-      {vista === 'ventas' ? <Ventas ventas={ventas} onBorrar={borrarVenta} /> : (
+      {vista === 'banners' ? <Banners clave={clave} setEstado={setEstado} setError={setError} /> :
+       vista === 'ventas' ? <Ventas ventas={ventas} onBorrar={borrarVenta} /> : (
     <div className="panel-admin">
       <form onSubmit={publicar} className="formulario">
         <label>Categoría
@@ -343,6 +347,86 @@ function OrdenFotos({ srcs, onOrden }) {
           </li>
         ))}
       </ol>
+    </div>
+  );
+}
+
+// Banners del carrusel de la portada: se suben, se ven y se borran. El más nuevo va primero, después de la foto del local.
+function Banners({ clave, setEstado, setError }) {
+  const [lista, setLista] = useState(null);
+  const [subiendo, setSubiendo] = useState(false);
+
+  async function cargar() {
+    const r = await fetch('/api/banners');
+    setLista(r.ok ? await r.json() : []);
+  }
+  useEffect(() => { cargar(); }, []);
+
+  async function subir(e) {
+    const archivos = [...e.target.files];
+    const input = e.target;
+    setError('');
+    if (!clave) { input.value = ''; return setError('Escribí la contraseña del panel.'); }
+    const grande = archivos.find(a => a.size > 10 * 1024 * 1024);
+    if (grande) { input.value = ''; return setError(`La imagen ${grande.name} pesa más de 10 MB. Achicala y probá de nuevo.`); }
+    setSubiendo(true);
+    try {
+      for (const [i, archivo] of archivos.entries()) {
+        setEstado(`Subiendo banner ${i + 1} de ${archivos.length}`);
+        const nombre = archivo.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-');
+        await upload(`banners/${nombre}`, archivo, { access: 'public', handleUploadUrl: '/api/subir', clientPayload: clave });
+      }
+      setEstado(archivos.length === 1 ? 'Banner subido. Ya aparece en la portada.' : `${archivos.length} banners subidos. Ya aparecen en la portada.`);
+      cargar();
+    } catch (err) {
+      setEstado('');
+      setError(err.message.includes('Contraseña') ? 'La contraseña no es correcta.' : `No se pudo subir: ${err.message}`);
+    } finally {
+      setSubiendo(false);
+      input.value = '';
+    }
+  }
+
+  async function borrar(b) {
+    if (!confirm('¿Borrar este banner? Deja de aparecer en la portada.')) return;
+    setError('');
+    const r = await fetch('/api/banners', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clave, url: b.url })
+    });
+    if (!r.ok) return setError((await r.json()).error);
+    setEstado('Banner borrado.');
+    cargar();
+  }
+
+  return (
+    <div className="banners-admin">
+      <div className="formulario">
+        <h2 className="subtitulo" style={{ marginBottom: 0 }}>Banners de la portada</h2>
+        <p className="nota">Se muestran en el carrusel de arriba de la página, después de la foto del local. El último que subas va primero. Conviene que sean horizontales (por ejemplo 1920 × 1080 o 1536 × 1024).</p>
+        <label className={`btn btn-azul subir-banner${subiendo ? ' deshabilitado' : ''}`}>
+          <UploadSimpleIcon size={16} /> {subiendo ? 'Subiendo' : 'Subir banners'}
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple onChange={subir} disabled={subiendo} hidden />
+        </label>
+      </div>
+
+      {lista === null ? <p className="nota">Cargando</p> : lista.length === 0 ? (
+        <p className="nota">Todavía no subiste banners. Mientras tanto, la portada muestra solo la foto del local.</p>
+      ) : (
+        <ol className="lista-banners">
+          {lista.map((b, i) => (
+            <li key={b.url}>
+              <img src={b.url} alt={`Banner ${i + 1}`} />
+              <div>
+                <strong>Banner {i + 1}</strong>
+                <span>Subido el {fecha(b.fecha)}</span>
+              </div>
+              <button className="btn-icono" aria-label={`Borrar el banner ${i + 1}`} onClick={() => borrar(b)}><TrashIcon size={16} /></button>
+            </li>
+          ))}
+        </ol>
+      )}
     </div>
   );
 }

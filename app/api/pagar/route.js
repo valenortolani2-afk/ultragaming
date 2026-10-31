@@ -9,8 +9,24 @@ export async function POST(request) {
   if (!mpConfigurado()) return error('Los pagos con Mercado Pago todavía no están habilitados. Escribinos por WhatsApp para comprar.', 503);
   if (!blobConfigurado()) return error('Falta conectar Vercel Blob (BLOB_READ_WRITE_TOKEN)', 500);
 
-  const { items } = await request.json().catch(() => ({}));
+  const { items, comprador: datos = {} } = await request.json().catch(() => ({}));
   if (!Array.isArray(items) || !items.length || items.length > 20) return error('El carrito está vacío', 400);
+
+  const texto = (valor, largo) => String(valor ?? '').trim().slice(0, largo);
+  const comprador = {
+    nombre: texto(datos.nombre, 60),
+    apellido: texto(datos.apellido, 60),
+    dni: texto(datos.dni, 12).replace(/\D/g, ''),
+    telefono: texto(datos.telefono, 20),
+    codigo_postal: texto(datos.codigoPostal, 8).toUpperCase(),
+    localidad: texto(datos.localidad, 80),
+    direccion: texto(datos.direccion, 120)
+  };
+  if (!comprador.nombre || !comprador.apellido) return error('Completá tu nombre y apellido', 400);
+  if (!/^\d{7,8}$/.test(comprador.dni)) return error('El DNI tiene que tener 7 u 8 números', 400);
+  if (comprador.telefono.replace(/\D/g, '').length < 8) return error('Revisá el teléfono: tiene que tener al menos 8 números', 400);
+  if (!/^[A-Z0-9]{4,8}$/.test(comprador.codigo_postal)) return error('Revisá el código postal', 400);
+  if (!comprador.localidad || !comprador.direccion) return error('Completá la localidad y la dirección', 400);
 
   const productos = await Promise.all(items.map(async i => {
     const p = await buscarPublicacion(i.slug, i.id);
@@ -29,6 +45,7 @@ export async function POST(request) {
     const preferencia = await crearPreferencia({
       base,
       referencia: randomUUID(),
+      comprador,
       items: vigentes.map(({ p, cantidad }) => ({
         // El id lleva categoría e id del producto para registrar la venta cuando llegue el pago
         id: `${p.slug}/${p.id}`,

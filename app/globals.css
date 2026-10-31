@@ -226,6 +226,16 @@ img { display: block; }
 .carrito-total span { color: var(--gris); }
 .carrito-total strong { font-size: 24px; line-height: 32px; }
 .carrito-pie .btn { justify-content: center; }
+.carrito-cabeza:has(.btn-icono + h2) { justify-content: start; gap: 12px; }
+.carrito-cabeza:has(.btn-icono + h2) h2 { flex: 1; }
+.carrito-form { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.carrito-datos { flex: 1; overflow-y: auto; display: grid; align-content: start; gap: 12px; padding: 16px 24px; }
+.carrito-datos label { display: grid; gap: 6px; font-size: 14px; line-height: 20px; font-weight: 500; }
+.carrito-datos input {
+  padding: 8px 12px; border-radius: 8px; border: 1px solid var(--borde2);
+  background: var(--sup2); color: var(--texto); font: inherit; font-size: 16px;
+}
+.carrito-datos input:focus { outline: none; border-color: var(--azul); }
 
 /* Resultado del pago */
 .compra { min-height: 70vh; display: grid; place-content: center; justify-items: center; gap: 12px; padding: 96px 16px; text-align: center; }
@@ -374,6 +384,7 @@ img { display: block; }
 .tabla-ventas td strong { display: block; font-weight: 500; white-space: normal; min-width: 200px; }
 .tabla-ventas td span { color: var(--gris); font-size: 12px; line-height: 16px; }
 .tabla-ventas td:last-child { width: 1%; }
+.tabla-ventas td.comprador span { display: block; white-space: normal; min-width: 220px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 @media (max-width: 960px) {

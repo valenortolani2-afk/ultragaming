@@ -22,6 +22,12 @@ export async function POST(request) {
     if (await hayVentasCon(prefijo)) return new Response(null, { status: 200 });
 
     const items = pago.additional_info?.items || [];
+    // Datos que el comprador cargó en el carrito (las compras anteriores a este cambio no los tienen)
+    const c = pago.metadata?.comprador || {};
+    const cliente = c.dni ? {
+      nombre: c.nombre, apellido: c.apellido, dni: c.dni, telefono: c.telefono,
+      codigoPostal: c.codigo_postal, localidad: c.localidad, direccion: c.direccion
+    } : null;
     const costosPorCategoria = {};
     for (const item of items) {
       const [slug, producto] = String(item.id || '').split('/');
@@ -37,7 +43,8 @@ export async function POST(request) {
         precio: Math.round(unitario * cantidad),
         origen: 'Mercado Pago',
         pago: String(pago.id),
-        comprador: pago.payer?.email || ''
+        comprador: pago.payer?.email || '',
+        cliente
       }, prefijo);
     }
     return new Response(null, { status: 200 });

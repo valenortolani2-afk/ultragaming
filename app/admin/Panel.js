@@ -374,7 +374,7 @@ function Ventas({ ventas, onBorrar }) {
       <div className="tabla-ventas">
         <table>
           <thead>
-            <tr><th>Fecha</th><th>Producto</th><th>Costo</th><th>Venta final</th><th>Ganancia</th><th><span className="sr-only">Acciones</span></th></tr>
+            <tr><th>Fecha</th><th>Producto</th><th>Comprador</th><th>Costo</th><th>Venta final</th><th>Ganancia</th><th><span className="sr-only">Acciones</span></th></tr>
           </thead>
           <tbody>
             {ventas.map(v => (
@@ -382,7 +382,17 @@ function Ventas({ ventas, onBorrar }) {
                 <td>{fecha(v.fecha)}</td>
                 <td>
                   <strong>{v.nombre}</strong>
-                  <span>{[v.categoria, v.origen && `${v.origen} N° ${v.pago}`, v.comprador].filter(Boolean).join(' · ')}</span>
+                  <span>{[v.categoria, v.origen && `${v.origen} N° ${v.pago}`].filter(Boolean).join(' · ')}</span>
+                </td>
+                <td className="comprador">
+                  {v.cliente ? (
+                    <>
+                      <strong>{v.cliente.nombre} {v.cliente.apellido}</strong>
+                      <span>DNI {v.cliente.dni} · Tel. {v.cliente.telefono}</span>
+                      <span>{v.cliente.direccion}, {v.cliente.localidad} (CP {v.cliente.codigoPostal})</span>
+                      {v.comprador && <span>{v.comprador}</span>}
+                    </>
+                  ) : v.comprador ? <span>{v.comprador}</span> : <span>—</span>}
                 </td>
                 <td>{v.costo === null ? 'Sin cargar' : pesos(v.costo)}</td>
                 <td>{pesos(v.precio)}</td>

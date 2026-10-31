@@ -7,27 +7,24 @@ import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react';
 const intervalo = 6000;
 
 // Portada en carrusel: la primera diapositiva es la foto del local con su texto (children)
-// y después van los banners que se suben desde /admin. Pasa sola cada 6 segundos.
+// y después van los banners que se suben desde /admin. Pasa sola cada 6 segundos, siempre;
+// al tocar una flecha o un punto, los 6 segundos vuelven a contar desde ahí.
 export default function Carrusel({ banners, children }) {
   const total = banners.length + 1;
   const [activa, setActiva] = useState(0);
-  const [pausa, setPausa] = useState(false);
 
   useEffect(() => {
-    // Sin movimiento automático si el dispositivo pide reducirlo
-    if (total < 2 || pausa || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (total < 2) return;
     const t = setTimeout(() => setActiva(a => (a + 1) % total), intervalo);
     return () => clearTimeout(t);
-  }, [activa, pausa, total]);
+  }, [activa, total]);
 
   if (total < 2) return <section className="hero">{children}</section>;
 
   const ir = i => setActiva((i + total) % total);
 
   return (
-    <section className="hero carrusel" aria-roledescription="carrusel" aria-label="Portada"
-      onMouseEnter={() => setPausa(true)} onMouseLeave={() => setPausa(false)}
-      onFocus={() => setPausa(true)} onBlur={() => setPausa(false)}>
+    <section className="hero carrusel" aria-roledescription="carrusel" aria-label="Portada">
       <div className={`diapo diapo-inicio${activa === 0 ? ' activa' : ''}`} aria-roledescription="diapositiva" aria-label={`1 de ${total}`} inert={activa !== 0}>
         {children}
       </div>

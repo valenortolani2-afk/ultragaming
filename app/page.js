@@ -1,13 +1,22 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  ChatsCircleIcon, HandPointingIcon, InstagramLogoIcon, PlusIcon, ShieldCheckIcon, StorefrontIcon,
+  ChatsCircleIcon, HandPointingIcon, InstagramLogoIcon, PlusIcon, ShieldCheckIcon, StarFourIcon, StorefrontIcon,
   TruckIcon, WhatsappLogoIcon, WrenchIcon
 } from '@phosphor-icons/react/dist/ssr';
 import { consultar, garantia, instagram, marcas, whatsapp } from '../lib/contacto';
 import { categorias } from '../lib/categorias';
 import Nav from './Nav';
 import { FraseReveladora, Revelar } from './Revelar';
+
+const cinta = [
+  'Garantía de 12 meses en productos nuevos',
+  'Service',
+  'Asesoramiento',
+  'Garantía de 4 meses en outlet',
+  'Atención personalizada',
+  { texto: 'Envíos a todo el país', clase: 'azul' }
+].map(t => typeof t === 'string' ? { texto: t } : t);
 
 const beneficios = [
   { icono: ShieldCheckIcon, titulo: `${garantia} de garantía`, texto: 'En todos los productos. Si algo falla, lo revisamos y te lo resolvemos.', destacada: true },
@@ -54,6 +63,21 @@ export default function Inicio() {
             </div>
           </div>
         </section>
+
+        {/* Cinta en movimiento con lo que ofrece el local. Va dos veces seguida para que el giro no tenga cortes. */}
+        <div className="cinta" role="region" aria-label="Lo que te ofrecemos">
+          <div className="cinta-pista">
+            {[0, 1].map(copia => (
+              <ul key={copia} aria-hidden={copia === 1 || undefined}>
+                {cinta.map(t => (
+                  <li key={t.texto} className={t.clase}>
+                    <StarFourIcon size={14} weight="fill" /> <span>{t.texto}</span>
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
 
         <section id="ofertas" className="seccion">
           <div className="contenedor">

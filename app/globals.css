@@ -69,6 +69,25 @@ img { display: block; }
 .btn-icono:active { transform: scale(0.98); }
 
 /* Barra superior y navegación flotante */
+/* Cinta violeta en movimiento arriba de Ofertas */
+.cinta {
+  position: relative; z-index: 1; overflow: hidden; padding: 14px 0;
+  background: #6d28d9; color: #ffd60a; border-block: 2px solid #8b5cf6;
+  box-shadow: 0 12px 32px rgba(109, 40, 217, .35);
+}
+.cinta-pista { display: flex; width: max-content; animation: cinta 28s linear infinite; }
+.cinta:hover .cinta-pista { animation-play-state: paused; }
+.cinta ul { list-style: none; display: flex; flex: none; }
+.cinta li {
+  display: inline-flex; align-items: center; gap: 12px; padding-right: 40px; white-space: nowrap;
+  font-size: 16px; line-height: 24px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+}
+.cinta li svg { flex: none; color: #ffd60a; }
+/* Envíos en azul: etiqueta azul con texto blanco, porque el texto azul sobre violeta no se lee */
+.cinta li.azul span { padding: 2px 12px; border-radius: 9999px; background: var(--azul-fondo); color: #fff; box-shadow: 0 0 0 2px #60a5fa; }
+@keyframes cinta { to { transform: translateX(-50%); } }
+@media (max-width: 720px) { .cinta li { font-size: 14px; line-height: 20px; padding-right: 32px; } .cinta-pista { animation-duration: 22s; } }
+
 .franja { background: var(--azul-fondo); text-align: center; font-size: 14px; line-height: 20px; font-weight: 600; padding: 8px 16px; }
 .nav {
   position: fixed; top: 48px; left: 50%; z-index: 40; transform: translateX(-50%);
@@ -458,6 +477,10 @@ img { display: block; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-property: opacity, color, background-color !important; }
   .revelar, .menu-movil a, .ficha { transform: none !important; }
+  /* Sin movimiento: la cinta queda quieta y los textos se acomodan en varias líneas */
+  .cinta-pista { animation: none; width: auto; justify-content: center; }
+  .cinta ul { flex-wrap: wrap; justify-content: center; row-gap: 8px; padding: 0 16px; }
+  .cinta ul[aria-hidden] { display: none; }
 }
 
 /* Teléfono del comprador como link a WhatsApp */

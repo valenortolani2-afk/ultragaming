@@ -4,17 +4,20 @@ import { notFound } from 'next/navigation';
 import { ArrowLeftIcon, PackageIcon, ShieldCheckIcon, WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr';
 import { buscarCategoria, categorias } from '../../../lib/categorias';
 import { listarPublicaciones } from '../../../lib/publicaciones';
-import { consultar, garantia, whatsapp } from '../../../lib/contacto';
+import { consultar, garantiaOutlet, garantias, whatsapp } from '../../../lib/contacto';
 import Vidriera from '../../Vidriera';
 import { BotonCarrito } from '../../Carrito';
 import Buscador from '../../Buscador';
+
+// En PCs outlet todo es outlet; en el resto puede haber nuevos y outlet
+const textoGarantia = c => c.slug === 'pcs-outlet' ? `Garantía de ${garantiaOutlet} en todos los productos` : garantias.replace(/^./, l => l.toUpperCase());
 
 // Se arma en cada visita para mostrar al instante lo que se sube desde /admin
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const c = buscarCategoria((await params).slug);
-  return c ? { title: `${c.titulo} · Ultra Gaming`, description: `${c.titulo} con ${garantia} de garantía en Ultra Gaming.` } : {};
+  return c ? { title: `${c.titulo} · Ultra Gaming`, description: `${c.titulo} en Ultra Gaming: ${textoGarantia(c)}.` } : {};
 }
 
 export default async function PaginaCategoria({ params }) {
@@ -47,7 +50,7 @@ export default async function PaginaCategoria({ params }) {
               <p className="etiqueta">Ofertas</p>
               <h1 className="degrade">{categoria.titulo}</h1>
               <p className="prueba" style={{ marginTop: 0 }}>
-                <span><ShieldCheckIcon size={16} weight="fill" /> Garantía de {garantia} en todos los productos</span>
+                <span><ShieldCheckIcon size={16} weight="fill" /> {textoGarantia(categoria)}</span>
               </p>
             </div>
           </div>

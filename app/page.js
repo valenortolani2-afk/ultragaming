@@ -4,7 +4,7 @@ import {
   ChatsCircleIcon, HandPointingIcon, InstagramLogoIcon, PlusIcon, ShieldCheckIcon, StarFourIcon, StorefrontIcon,
   TruckIcon, WhatsappLogoIcon, WrenchIcon
 } from '@phosphor-icons/react/dist/ssr';
-import { consultar, garantia, instagram, marcas, whatsapp } from '../lib/contacto';
+import { consultar, garantiaNuevos, garantiaOutlet, instagram, marcas, whatsapp } from '../lib/contacto';
 import { categorias } from '../lib/categorias';
 import Nav from './Nav';
 import { FraseReveladora, Revelar } from './Revelar';
@@ -19,7 +19,7 @@ const cinta = [
 ].map(t => typeof t === 'string' ? { texto: t } : t);
 
 const beneficios = [
-  { icono: ShieldCheckIcon, titulo: `${garantia} de garantía`, texto: 'En todos los productos. Si algo falla, lo revisamos y te lo resolvemos.', destacada: true },
+  { icono: ShieldCheckIcon, titulo: `Hasta ${garantiaNuevos} de garantía`, texto: `${garantiaNuevos} en productos nuevos y ${garantiaOutlet} en outlet. Si algo falla, lo revisamos y te lo resolvemos.`, destacada: true },
   { icono: WrenchIcon, titulo: 'Servicio técnico propio', texto: 'Reparación, limpieza y actualización de tu PC en el local.' },
   { icono: ChatsCircleIcon, titulo: 'Asesoramiento personalizado', texto: 'Te ayudamos a elegir piezas compatibles con lo que ya tenés.' },
   { icono: TruckIcon, titulo: 'Envíos a todo el país', texto: 'Coordinamos el envío por WhatsApp apenas confirmás la compra.' }
@@ -32,7 +32,7 @@ const pasos = [
 ];
 
 const preguntas = [
-  [`¿Qué cubre la garantía de ${garantia}?`, `Cubre fallas de funcionamiento durante ${garantia} desde la compra. Traés el producto o nos escribís, lo revisa nuestro servicio técnico y lo reparamos o cambiamos. No cubre golpes, humedad ni daños por mal uso.`],
+  [`¿Qué cubre la garantía?`, `Los productos nuevos tienen ${garantiaNuevos} y los outlet ${garantiaOutlet}, desde la compra, y cubre fallas de funcionamiento. Traés el producto o nos escribís, lo revisa nuestro servicio técnico y lo reparamos o cambiamos. No cubre golpes, humedad ni daños por mal uso.`],
   ['¿Los precios están actualizados?', 'Sí, pero el stock se mueve rápido. Antes de pagar te confirmamos precio y disponibilidad por WhatsApp.'],
   ['¿Qué formas de pago aceptan?', 'Consultanos por WhatsApp las formas de pago y las cuotas vigentes para tu tarjeta.'],
   ['¿Hacen envíos?', 'Sí, a todo el país. El costo y el tiempo dependen de tu ciudad y te los pasamos antes de despachar.'],
@@ -43,7 +43,7 @@ const preguntas = [
 export default function Inicio() {
   return (
     <>
-      <div className="franja">{garantia} de garantía en todos los productos · Envíos a todo el país</div>
+      <div className="franja">{garantiaNuevos} de garantía en nuevos · {garantiaOutlet} en outlet · Envíos a todo el país</div>
       <Nav />
 
       <main id="contenido">
@@ -52,11 +52,11 @@ export default function Inicio() {
           <div className="contenedor">
             <div className="hero-panel">
               <p className="etiqueta">Tienda informática · Ofertas</p>
-              <h1 className="degrade">Hardware gamer con{' '}<br />{garantia} de garantía</h1>
+              <h1 className="degrade">Hardware gamer con{' '}<br />hasta {garantiaNuevos} de garantía</h1>
               <p className="bajada">PCs outlet, combos, placas de video y componentes de ASUS, MSI, Zotac y más. Tocá cada producto para ver precio y detalles.</p>
               <a href="#ofertas" className="btn btn-azul"><HandPointingIcon size={16} /> Ver las ofertas</a>
               <div className="prueba">
-                <span><ShieldCheckIcon size={16} weight="fill" /> Garantía de {garantia}</span>
+                <span><ShieldCheckIcon size={16} weight="fill" /> Hasta {garantiaNuevos} de garantía</span>
                 <span><WrenchIcon size={16} /> Servicio técnico propio</span>
                 <span><TruckIcon size={16} /> Envíos a todo el país</span>
               </div>
@@ -104,7 +104,7 @@ export default function Inicio() {
 
         <section className="seccion frase" aria-label="Nuestra propuesta">
           <div className="contenedor">
-            <FraseReveladora lineas={['Tocás el producto.', 'Ves el precio.', `Te lo llevás con ${garantia} de garantía.`]} />
+            <FraseReveladora lineas={['Tocás el producto.', 'Ves el precio.', `Te lo llevás con hasta ${garantiaNuevos} de garantía.`]} />
           </div>
         </section>
 
@@ -178,7 +178,7 @@ export default function Inicio() {
             </div>
             <div>
               <p className="etiqueta"><StorefrontIcon size={14} weight="fill" /> El local</p>
-              <h2 className="degrade">Hardware gamer con<br />{garantia} de garantía</h2>
+              <h2 className="degrade">Hardware gamer con<br />hasta {garantiaNuevos} de garantía</h2>
               <p className="bajada">Vení a ver los productos, traé tu PC al servicio técnico o escribinos y te lo enviamos.</p>
               <div className="contactos">
                 <a href="#ofertas" className="btn btn-azul"><HandPointingIcon size={16} /> Ver las ofertas</a>

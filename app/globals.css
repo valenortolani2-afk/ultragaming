@@ -350,6 +350,17 @@ img { display: block; }
 /* Página de cada categoría */
 .hero.cabecera-categoria { min-height: 480px; padding-top: 128px; }
 .cabecera-categoria h1 { font-size: 48px; line-height: 1; margin-bottom: 16px; }
+.cabecera-foto { display: none; }
+@media (min-width: 961px) {
+  .cabecera-fondo { filter: blur(28px) brightness(.5) saturate(1.2); transform: scale(1.15); }
+  .cabecera-foto {
+    display: block; position: absolute; z-index: 1; top: 104px; bottom: 32px;
+    right: max(16px, calc((100% - 1200px) / 2)); width: min(440px, 36%);
+    border-radius: 24px; overflow: hidden; border: 1px solid var(--borde2); box-shadow: 0 24px 64px rgba(0, 0, 0, .5);
+  }
+  .cabecera-foto img { object-fit: cover; }
+  .cabecera-categoria .hero-panel { max-width: min(680px, 56%); }
+}
 .nav-links-fijos a { display: inline-flex; align-items: center; gap: 8px; }
 .vacio {
   display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;

@@ -44,7 +44,12 @@ export default async function PaginaCategoria({ params }) {
 
       <main id="contenido">
         <section className="hero cabecera-categoria">
-          <Image src={categoria.foto} alt="" fill priority sizes="100vw" className="hero-foto" />
+          {/* Las fotos de categoría son chicas para una franja tan ancha: en compu el fondo va desenfocado
+              y la foto nítida se ve en un recuadro a la derecha, sin estirarla. En celular se ve como fondo. */}
+          <Image src={categoria.foto} alt="" fill priority sizes="100vw" className="hero-foto cabecera-fondo" />
+          <div className="cabecera-foto" aria-hidden>
+            <Image src={categoria.foto} alt="" fill sizes="(max-width: 960px) 1px, 480px" />
+          </div>
           <div className="contenedor">
             <div className="hero-panel">
               <p className="etiqueta">Ofertas</p>

@@ -31,3 +31,18 @@ Para probar sin cobrar de verdad, usá las **credenciales de prueba** de la mism
 Cada pago aprobado aparece solo en la pestaña **Ventas** de `/admin`, con el costo, el precio cobrado y la ganancia. El producto sigue publicado: si era la última unidad, borralo desde el panel.
 
 Sin `MP_ACCESS_TOKEN`, el carrito funciona pero al pagar le pide al cliente que escriba por WhatsApp.
+
+## Aviso por mail de cada venta
+
+Cada vez que Mercado Pago aprueba un pago, la página manda un mail con los productos, el costo, el precio cobrado, la ganancia y los datos del comprador (con un link para escribirle por WhatsApp). Se envía con [Resend](https://resend.com), que tiene un plan gratis de 3.000 mails por mes.
+
+1. Creá una cuenta en [resend.com](https://resend.com) **con el mismo mail en el que querés recibir los avisos**. Sin un dominio propio verificado, Resend solo deja mandar mails al dueño de la cuenta.
+2. En **API Keys**, creá una clave con permiso **Sending access** y copiala (empieza con `re_`).
+3. En Vercel, en **Settings → Environment Variables**, agregá:
+   - `RESEND_API_KEY` con esa clave. Es secreta: no la compartas ni la guardes en el repositorio.
+   - `AVISO_VENTAS_EMAIL` con el mail que recibe los avisos. Si son varios, separalos con coma.
+4. Volvé a desplegar el proyecto.
+
+Los mails llegan desde `onboarding@resend.dev`. Si la primera vez cae en spam, marcalo como "No es spam". Para mandarlos desde tu propio dominio (ej: `ventas@ultragaming.com.ar`), verificá el dominio en Resend y agregá `RESEND_FROM` con `Ultra Gaming <ventas@tu-dominio>`.
+
+Las ventas que marcás a mano con el botón **Vendido** del panel no mandan mail.

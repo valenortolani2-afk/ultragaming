@@ -1,6 +1,7 @@
 import { buscarPago, mpConfigurado } from '../../../lib/mercadopago';
 import { blobConfigurado, guardarVenta, hayVentasCon, listarCostos } from '../../../lib/publicaciones';
 import { buscarCategoria } from '../../../lib/categorias';
+import { avisarVenta } from '../../../lib/avisos';
 
 // Mercado Pago avisa acá cada vez que cambia un pago. No se confía en el aviso:
 // se vuelve a consultar el pago a Mercado Pago con el Access Token y solo se registran los aprobados.
@@ -29,13 +30,14 @@ export async function POST(request) {
       codigoPostal: c.codigo_postal, localidad: c.localidad, direccion: c.direccion
     } : null;
     const costosPorCategoria = {};
+    const ventas = [];
     for (const item of items) {
       const [slug, producto] = String(item.id || '').split('/');
       const cantidad = Number(item.quantity) || 1;
       const unitario = Number(item.unit_price) || 0;
       costosPorCategoria[slug] ??= buscarCategoria(slug) ? await listarCostos(slug) : {};
       const costo = costosPorCategoria[slug][producto];
-      await guardarVenta({
+      ventas.push(await guardarVenta({
         producto, slug,
         nombre: cantidad > 1 ? `${item.title} (x${cantidad})` : item.title,
         categoria: buscarCategoria(slug)?.nombre || '',
@@ -45,7 +47,17 @@ export async function POST(request) {
         pago: String(pago.id),
         comprador: pago.payer?.email || '',
         cliente
-      }, prefijo);
+      }, prefijo));
+    }
+
+    // Aviso por mail. Si falla, la venta ya quedó guardada: solo se anota el error para no perderla.
+    try {
+      await avisarVenta({
+        ventas, cliente, email: pago.payer?.email || '', pago: String(pago.id),
+        base: (process.env.BASE_URL || url.origin).replace(/\/$/, '')
+      });
+    } catch (err) {
+      console.error('No se pudo mandar el mail de la venta:', err);
     }
     return new Response(null, { status: 200 });
   } catch (err) {

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr';
 import { categorias } from '../../lib/categorias';
 import { blobConfigurado } from '../../lib/publicaciones';
+import { cloudinaryConfigurado } from '../../lib/cloudinary';
 import { garantia } from '../../lib/contacto';
 import Panel from './Panel';
 
@@ -11,6 +12,7 @@ export const dynamic = 'force-dynamic';
 export default function Admin() {
   const faltan = [
     !blobConfigurado() && 'BLOB_READ_WRITE_TOKEN (se crea al conectar un Blob store en Vercel)',
+    !cloudinaryConfigurado() && 'CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET (de tu cuenta de Cloudinary)',
     !process.env.ADMIN_PASSWORD && 'ADMIN_PASSWORD (la contraseña de este panel)'
   ].filter(Boolean);
 

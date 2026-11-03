@@ -1,5 +1,5 @@
 import {
-  blobConfigurado, borrarPublicacion, claveValida, editarPublicacion, esDeBlob, guardarPublicacion, listarCostos, listarPublicaciones, ordenarFotos
+  blobConfigurado, borrarPublicacion, claveValida, editarPublicacion, esDeBlob, esFoto, guardarPublicacion, listarCostos, listarPublicaciones, ordenarFotos
 } from '../../../lib/publicaciones';
 import { buscarCategoria } from '../../../lib/categorias';
 
@@ -16,7 +16,7 @@ export async function GET(request) {
   return Response.json(publicaciones.map(p => ({ ...p, costo: costos[p.id] ?? null })));
 }
 
-// Crea un producto con las fotos que el panel ya subió a Blob
+// Crea un producto con las fotos que el panel ya subió a Cloudinary
 export async function POST(request) {
   if (!blobConfigurado()) return error('Falta conectar Vercel Blob (BLOB_READ_WRITE_TOKEN)', 500);
   const { clave, categoria, nombre, precio, costo, descripcion, garantia, fotos } = await request.json().catch(() => ({}));
@@ -25,7 +25,7 @@ export async function POST(request) {
   if (!nombre?.trim()) return error('Escribí un título', 400);
   if (!(Number(precio) > 0)) return error('El precio de venta tiene que ser un número mayor a cero', 400);
   if (costo !== undefined && costo !== '' && !(Number(costo) >= 0)) return error('El precio de costo tiene que ser un número', 400);
-  if (!Array.isArray(fotos) || !fotos.length || fotos.length > 8 || !fotos.every(esDeBlob)) {
+  if (!Array.isArray(fotos) || !fotos.length || fotos.length > 8 || !fotos.every(esFoto)) {
     return error('Subí entre 1 y 8 fotos', 400);
   }
   const publicacion = await guardarPublicacion({
@@ -48,7 +48,7 @@ export async function PATCH(request) {
   if (!esDeBlob(url) || !new URL(url).pathname.startsWith('/publicaciones/')) return error('Producto inválido', 400);
   try {
     if (fotos !== undefined) {
-      if (!Array.isArray(fotos) || !fotos.length || !fotos.every(esDeBlob)) return error('Fotos inválidas', 400);
+      if (!Array.isArray(fotos) || !fotos.length || !fotos.every(esFoto)) return error('Fotos inválidas', 400);
       return Response.json(await ordenarFotos(url, fotos));
     }
     if (!nombre?.trim()) return error('Escribí un título', 400);

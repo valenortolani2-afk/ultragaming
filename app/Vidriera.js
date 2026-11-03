@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import Foto from './Foto';
 import { CheckIcon, ShieldCheckIcon, ShoppingCartIcon, WhatsappLogoIcon, XIcon } from '@phosphor-icons/react';
 import { consultar, garantia, pesos } from '../lib/contacto';
 import { useCarrito } from './Carrito';
@@ -120,7 +120,7 @@ export default function Vidriera({ productos }) {
           <article key={p.id} className="producto">
             {/* En la tarjeta van la foto y el título; el resto se ve al tocarla */}
             <button className="tarjeta" onClick={() => abrir(p)} aria-haspopup="dialog" aria-label={`Ver ${p.nombre}`}>
-              <Image src={p.fotos[0]} alt="" fill sizes="(max-width: 720px) 100vw, 400px" className="tarjeta-foto" />
+              <Foto src={p.fotos[0]} alt="" fill sizes="(max-width: 720px) 100vw, 400px" className="tarjeta-foto" />
               <span className="tarjeta-info">
                 <strong>{p.nombre}</strong>
               </span>
@@ -144,8 +144,8 @@ export default function Vidriera({ productos }) {
           <div className="ficha-grid">
             <div className="ficha-fotos" style={fondo ? { background: fondo } : undefined}>
               {/* El espacio que sobra se llena con el color del borde de la foto o, si no es parejo, con la foto desenfocada */}
-              {!fondo && <Image src={elegido.fotos[fotoActiva]} alt="" aria-hidden fill sizes="64px" className="ficha-fondo" />}
-              <Image src={elegido.fotos[fotoActiva]} alt={elegido.nombre} fill sizes="(max-width: 960px) 100vw, 480px" className="ficha-foto"
+              {!fondo && <Foto src={elegido.fotos[fotoActiva]} alt="" aria-hidden fill sizes="64px" className="ficha-fondo" />}
+              <Foto src={elegido.fotos[fotoActiva]} alt={elegido.nombre} fill sizes="(max-width: 960px) 100vw, 480px" className="ficha-foto"
                 onLoad={e => medirRelleno(e.currentTarget)}
                 // Si la foto ya estaba en caché, onLoad a veces no llega: se mide apenas aparece
                 ref={img => img?.complete && img.naturalWidth > 0 && medirRelleno(img)} />
@@ -153,7 +153,7 @@ export default function Vidriera({ productos }) {
                 <div className="miniaturas">
                   {elegido.fotos.map((f, i) => (
                     <button key={f} className={i === fotoActiva ? 'activa' : ''} onClick={() => setFotoActiva(i)} aria-label={`Foto ${i + 1}`}>
-                      <Image src={f} alt="" fill sizes="48px" style={{ objectFit: 'contain' }} />
+                      <Foto src={f} alt="" fill sizes="48px" style={{ objectFit: 'contain' }} />
                     </button>
                   ))}
                 </div>

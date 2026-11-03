@@ -1,4 +1,4 @@
-import { blobConfigurado, borrarBanner, claveValida, esBanner, listarBanners } from '../../../lib/publicaciones';
+import { avisarCambioDeBanners, borrarBanner, claveValida, esBanner, listarBanners } from '../../../lib/publicaciones';
 
 const error = (mensaje, status) => Response.json({ error: mensaje }, { status });
 
@@ -7,9 +7,16 @@ export async function GET() {
   return Response.json(await listarBanners());
 }
 
+// El panel avisa que subió banners nuevos a Cloudinary, para que la portada los muestre
+export async function POST(request) {
+  const { clave } = await request.json().catch(() => ({}));
+  if (!claveValida(clave)) return error('Contraseña incorrecta', 401);
+  avisarCambioDeBanners();
+  return Response.json({ ok: true });
+}
+
 // Borra un banner
 export async function DELETE(request) {
-  if (!blobConfigurado()) return error('Falta conectar Vercel Blob (BLOB_READ_WRITE_TOKEN)', 500);
   const { clave, url } = await request.json().catch(() => ({}));
   if (!claveValida(clave)) return error('Contraseña incorrecta', 401);
   if (!esBanner(url)) return error('Banner inválido', 400);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import Foto from './Foto';
 import { MagnifyingGlassIcon, XIcon } from '@phosphor-icons/react';
 import { pesos } from '../lib/contacto';
 
@@ -75,7 +75,7 @@ export default function Buscador() {
                     <li key={p.id}>
                       {/* El # abre la ficha del producto apenas carga la categoría */}
                       <a href={`/categoria/${p.slug}#${p.id}`} onClick={() => setAbierto(false)}>
-                        <span className="buscador-foto"><Image src={p.foto} alt="" fill sizes="48px" /></span>
+                        <span className="buscador-foto"><Foto src={p.foto} alt="" fill sizes="48px" /></span>
                         <span className="buscador-texto">
                           <strong>{p.nombre}</strong>
                           <span>{p.categoria} · {p.desde ? 'Desde ' : ''}{pesos(p.precio)}</span>

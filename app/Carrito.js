@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import Foto from './Foto';
 import { ArrowLeftIcon, MinusIcon, PlusIcon, ShoppingCartIcon, TrashIcon, XIcon } from '@phosphor-icons/react';
 import { pesos } from '../lib/contacto';
 
@@ -133,7 +133,7 @@ export function CarritoProvider({ children }) {
             <ul className="carrito-lista">
               {items.map(i => (
                 <li key={i.id}>
-                  <div className="carrito-foto"><Image src={i.foto} alt="" fill sizes="64px" /></div>
+                  <div className="carrito-foto"><Foto src={i.foto} alt="" fill sizes="64px" /></div>
                   <div className="carrito-info">
                     <strong>{i.nombre}</strong>
                     <span>{pesos(i.precio)}</span>

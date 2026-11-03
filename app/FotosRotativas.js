@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import Foto from './Foto';
 
 const intervalo = 3500;
 
@@ -23,7 +23,7 @@ export default function FotosRotativas({ fotos, desfase = 0 }) {
   return (
     <>
       {fotos.map((f, i) => (
-        <Image key={f} src={f} alt="" fill sizes="(max-width: 720px) 100vw, 400px"
+        <Foto key={f} src={f} alt="" fill sizes="(max-width: 720px) 100vw, 400px"
           className={`tarjeta-foto foto-rotativa${i === activa ? ' activa' : ''}`} />
       ))}
       {fotos.length > 1 && (

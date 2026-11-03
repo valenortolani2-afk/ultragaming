@@ -1,12 +1,29 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { upload } from '@vercel/blob/client';
 import {
   CaretLeftIcon, CaretRightIcon, CurrencyDollarIcon, ImageIcon, ImagesIcon, PackageIcon, PencilSimpleIcon, ReceiptIcon, StarIcon, TrashIcon,
   UploadSimpleIcon, WhatsappLogoIcon
 } from '@phosphor-icons/react';
 import { escribirA, pesos } from '../../lib/contacto';
+
+// Sube una imagen a Cloudinary con el permiso firmado de /api/subir y devuelve su dirección
+async function subirImagen(archivo, categoria, clave) {
+  const r = await fetch('/api/subir', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ clave, categoria })
+  });
+  const permiso = await r.json();
+  if (!r.ok) throw new Error(permiso.error);
+  const form = new FormData();
+  for (const [k, v] of Object.entries(permiso.campos)) form.append(k, v);
+  form.append('file', archivo);
+  const subida = await fetch(permiso.url, { method: 'POST', body: form });
+  const data = await subida.json();
+  if (!subida.ok) throw new Error(data.error?.message || 'Cloudinary no aceptó la imagen');
+  return data.secure_url;
+}
 
 export default function Panel({ categorias, garantiaBase }) {
   const [clave, setClave] = useState('');
@@ -67,11 +84,7 @@ export default function Panel({ categorias, garantiaBase }) {
       const fotos = [];
       for (const [i, archivo] of archivos.entries()) {
         setEstado(`Subiendo foto ${i + 1} de ${archivos.length}`);
-        const nombreArchivo = archivo.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-');
-        const blob = await upload(`fotos/${categoria}/${nombreArchivo}`, archivo, {
-          access: 'public', handleUploadUrl: '/api/subir', clientPayload: clave
-        });
-        fotos.push(blob.url);
+        fotos.push(await subirImagen(archivo, categoria, clave));
       }
       setEstado('Guardando el producto');
       const r = await fetch('/api/publicaciones', {
@@ -373,9 +386,9 @@ function Banners({ clave, setEstado, setError }) {
     try {
       for (const [i, archivo] of archivos.entries()) {
         setEstado(`Subiendo banner ${i + 1} de ${archivos.length}`);
-        const nombre = archivo.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-');
-        await upload(`banners/${nombre}`, archivo, { access: 'public', handleUploadUrl: '/api/subir', clientPayload: clave });
+        await subirImagen(archivo, 'banners', clave);
       }
+      await fetch('/api/banners', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clave }) });
       setEstado(archivos.length === 1 ? 'Banner subido. Ya aparece en la portada.' : `${archivos.length} banners subidos. Ya aparecen en la portada.`);
       cargar();
     } catch (err) {

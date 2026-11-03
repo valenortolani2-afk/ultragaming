@@ -1,28 +1,14 @@
-import { handleUpload } from '@vercel/blob/client';
-import { blobConfigurado, claveValida } from '../../../lib/publicaciones';
+import { claveValida } from '../../../lib/publicaciones';
+import { cloudinaryConfigurado, permisoDeSubida } from '../../../lib/cloudinary';
 import { buscarCategoria } from '../../../lib/categorias';
 
-// Entrega al panel /admin un permiso temporal para subir una foto directo a Vercel Blob
+// Entrega al panel /admin un permiso firmado para subir una foto directo a Cloudinary
 export async function POST(request) {
-  if (!blobConfigurado()) return Response.json({ error: 'Falta conectar Vercel Blob (BLOB_READ_WRITE_TOKEN)' }, { status: 500 });
-  try {
-    const respuesta = await handleUpload({
-      body: await request.json(),
-      request,
-      onBeforeGenerateToken: async (pathname, clave) => {
-        const [carpeta, categoria] = pathname.split('/');
-        if (!claveValida(clave)) throw new Error('Contraseña incorrecta');
-        // Fotos de productos van en fotos/<categoría>/ y los banners de la portada en banners/
-        if (carpeta === 'fotos' ? !buscarCategoria(categoria) : carpeta !== 'banners') throw new Error('Categoría inválida');
-        return {
-          allowedContentTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
-          maximumSizeInBytes: 10 * 1024 * 1024,
-          addRandomSuffix: true
-        };
-      }
-    });
-    return Response.json(respuesta);
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 400 });
-  }
+  if (!cloudinaryConfigurado()) return Response.json({ error: 'Falta configurar Cloudinary (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET)' }, { status: 500 });
+  const { clave, categoria } = await request.json().catch(() => ({}));
+  if (!claveValida(clave)) return Response.json({ error: 'Contraseña incorrecta' }, { status: 401 });
+  // Fotos de productos van en fotos/<categoría>/ y los banners de la portada en banners/
+  if (categoria === 'banners') return Response.json(permisoDeSubida('banners', 'banner'));
+  if (!buscarCategoria(categoria)) return Response.json({ error: 'Categoría inválida' }, { status: 400 });
+  return Response.json(permisoDeSubida(`fotos/${categoria}`));
 }

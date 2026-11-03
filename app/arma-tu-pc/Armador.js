@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import Foto from '../Foto';
 import Link from 'next/link';
 import { ArrowRightIcon, CheckIcon, ProhibitIcon, ShoppingCartIcon, TrashIcon, WhatsappLogoIcon, XIcon } from '@phosphor-icons/react';
 import { consultar, pesos } from '../../lib/contacto';
@@ -159,7 +159,7 @@ export default function Armador({ productos }) {
               return (
                 <li key={s.id} className={p ? 'con-pieza' : ''}>
                   <button className="armado-resumen-paso" onClick={() => irA(i)}>
-                    <span className="armado-mini">{p && <Image src={p.fotos[0]} alt="" fill sizes="48px" />}</span>
+                    <span className="armado-mini">{p && <Foto src={p.fotos[0]} alt="" fill sizes="48px" />}</span>
                     <span>
                       <small>{s.titulo}</small>
                       {p ? <strong>{p.nombre}</strong> : <em>{notas[s.id]?.resumen || 'Sin elegir'}</em>}
@@ -212,7 +212,7 @@ export default function Armador({ productos }) {
 function Opcion({ p, elegida, motivo, onElegir }) {
   return (
     <article className={`opcion${elegida ? ' elegida' : ''}${motivo ? ' no-va' : ''}`}>
-      <div className="opcion-foto"><Image src={p.fotos[0]} alt="" fill sizes="(max-width: 720px) 40vw, 200px" /></div>
+      <div className="opcion-foto"><Foto src={p.fotos[0]} alt="" fill sizes="(max-width: 720px) 40vw, 200px" /></div>
       <div className="opcion-texto">
         <strong>{p.nombre}</strong>
         <span className="opcion-precio">{precioTexto(p)}</span>

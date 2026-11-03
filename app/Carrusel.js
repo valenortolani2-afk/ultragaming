@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import Foto from './Foto';
 import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react';
 
 const intervalo = 6000;
@@ -33,9 +33,9 @@ export default function Carrusel({ banners, children }) {
         <div key={b.url} className={`diapo diapo-banner${activa === i + 1 ? ' activa' : ''}`}
           aria-roledescription="diapositiva" aria-label={`${i + 2} de ${total}`} inert={activa !== i + 1}>
           {/* El banner se ve completo; la misma imagen desenfocada llena los costados */}
-          <Image src={b.url} alt="" aria-hidden fill sizes="64px" className="banner-fondo" />
+          <Foto src={b.url} alt="" aria-hidden fill sizes="64px" className="banner-fondo" />
           <div className="banner-marco">
-            <Image src={b.url} alt={`Banner ${i + 1} de Ultra Gaming`} fill sizes="100vw" className="banner-foto" priority={i === 0} />
+            <Foto src={b.url} alt={`Banner ${i + 1} de Ultra Gaming`} fill sizes="100vw" className="banner-foto" priority={i === 0} />
           </div>
         </div>
       ))}

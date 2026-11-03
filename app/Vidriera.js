@@ -6,6 +6,7 @@ import { CheckIcon, ShieldCheckIcon, ShoppingCartIcon, WhatsappLogoIcon, XIcon }
 import { consultar, garantia, pesos } from '../lib/contacto';
 import { useCarrito } from './Carrito';
 import { marcaDe } from '../lib/marcas';
+import { plataformaDe } from '../lib/armado';
 
 const otras = 'Otras marcas';
 
@@ -40,7 +41,8 @@ function colorDelBorde(img) {
 }
 
 // Grilla de publicaciones de una categoría. Al tocar una se abre su ficha.
-export default function Vidriera({ productos }) {
+// plataformas: suma el menú INTEL / AMD (en Motherboards)
+export default function Vidriera({ productos, plataformas = false }) {
   const [elegido, setElegido] = useState(null);
   const [fotoActiva, setFotoActiva] = useState(0);
   // Color de relleno calculado para una foto; se guarda con su dirección para no mezclarlo con otra
@@ -72,40 +74,69 @@ export default function Vidriera({ productos }) {
   // Al cerrar la ficha se saca el #, así el mismo resultado se puede volver a abrir
   const alCerrar = () => location.hash && history.replaceState(null, '', location.pathname + location.search);
 
-  // Menú por marca: las marcas de estos productos, de la que más tiene a la que menos
-  const [marca, setMarca] = useState(null);
-  const cuenta = {};
-  for (const p of productos) { const m = marcaDe(p) || otras; cuenta[m] = (cuenta[m] || 0) + 1; }
-  const marcasMenu = Object.keys(cuenta).sort((a, b) => (a === otras) - (b === otras) || cuenta[b] - cuenta[a] || a.localeCompare(b));
-  const visibles = marca ? productos.filter(p => (marcaDe(p) || otras) === marca) : productos;
+  // Menú INTEL / AMD: se combina con el de marcas (ej: AMD + ASUS)
+  const [plataforma, setPlataforma] = useState(null);
+  const cuentaPlataforma = {};
+  if (plataformas) for (const p of productos) { const pl = plataformaDe(p); if (pl) cuentaPlataforma[pl] = (cuentaPlataforma[pl] || 0) + 1; }
+  const plataformasMenu = ['INTEL', 'AMD'].filter(pl => cuentaPlataforma[pl]);
+  const dePlataforma = plataforma ? productos.filter(p => plataformaDe(p) === plataforma) : productos;
 
-  // La marca elegida queda en la dirección (?marca=ASUS) para poder compartirla o volver con el botón atrás
+  // Menú por marca: las marcas de estos productos, de la que más tiene a la que menos
+  const [marcaElegida, setMarca] = useState(null);
+  const cuenta = {};
+  for (const p of dePlataforma) { const m = marcaDe(p) || otras; cuenta[m] = (cuenta[m] || 0) + 1; }
+  const marcasMenu = Object.keys(cuenta).sort((a, b) => (a === otras) - (b === otras) || cuenta[b] - cuenta[a] || a.localeCompare(b));
+  // Si la marca elegida no tiene productos en la plataforma elegida, se muestran todas
+  const marca = cuenta[marcaElegida] ? marcaElegida : null;
+  const visibles = marca ? dePlataforma.filter(p => (marcaDe(p) || otras) === marca) : dePlataforma;
+  const conMenu = plataformasMenu.length > 1 || marcasMenu.length > 1;
+
+  // La marca y la plataforma elegidas quedan en la dirección (?plataforma=AMD&marca=ASUS) para poder compartirlas o volver con el botón atrás
   useEffect(() => {
     const desdeDireccion = () => {
-      const m = new URLSearchParams(location.search).get('marca');
-      setMarca(m && cuenta[m] ? m : null);
+      const busqueda = new URLSearchParams(location.search);
+      const pl = busqueda.get('plataforma')?.toUpperCase();
+      setPlataforma(pl && cuentaPlataforma[pl] ? pl : null);
+      setMarca(busqueda.get('marca'));
     };
     desdeDireccion();
     window.addEventListener('popstate', desdeDireccion);
     return () => window.removeEventListener('popstate', desdeDireccion);
   }, [productos]);
-  function elegirMarca(m) {
-    setMarca(m);
+  function elegir(clave, valor, cambiar) {
+    cambiar(valor);
     const url = new URL(location.href);
-    if (m) url.searchParams.set('marca', m); else url.searchParams.delete('marca');
+    if (valor) url.searchParams.set(clave, valor); else url.searchParams.delete(clave);
     history.pushState(null, '', url.pathname + url.search);
   }
+  const elegirMarca = m => elegir('marca', m, setMarca);
+  const elegirPlataforma = pl => elegir('plataforma', pl, setPlataforma);
 
   return (
     <>
       {/* Con varias marcas, el menú va en una columna a la izquierda de las publicaciones (arriba en celular) */}
-      <div className={marcasMenu.length > 1 ? 'catalogo con-marcas' : 'catalogo'}>
-      {marcasMenu.length > 1 && (
-        <nav className="menu-marcas" aria-label="Filtrar por marca">
+      <div className={conMenu ? 'catalogo con-marcas' : 'catalogo'}>
+      {conMenu && (
+        <nav className="menu-marcas" aria-label="Filtrar publicaciones">
+          {plataformasMenu.length > 1 && (
+            <>
+              <span className="menu-marcas-titulo">Plataforma</span>
+              <div className="filtros">
+                <button className={`filtro${plataforma === null ? ' activo' : ''}`} aria-pressed={plataforma === null} onClick={() => elegirPlataforma(null)}>
+                  Todas <span className="cuenta">{productos.length}</span>
+                </button>
+                {plataformasMenu.map(pl => (
+                  <button key={pl} className={`filtro${plataforma === pl ? ' activo' : ''}`} aria-pressed={plataforma === pl} onClick={() => elegirPlataforma(pl)}>
+                    {pl} <span className="cuenta">{cuentaPlataforma[pl]}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
           <span className="menu-marcas-titulo">Marcas</span>
           <div className="filtros">
             <button className={`filtro${marca === null ? ' activo' : ''}`} aria-pressed={marca === null} onClick={() => elegirMarca(null)}>
-              Todas <span className="cuenta">{productos.length}</span>
+              Todas <span className="cuenta">{dePlataforma.length}</span>
             </button>
             {marcasMenu.map(m => (
               <button key={m} className={`filtro${marca === m ? ' activo' : ''}`} aria-pressed={marca === m} onClick={() => elegirMarca(m)}>

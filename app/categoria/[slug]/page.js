@@ -67,7 +67,7 @@ export default async function PaginaCategoria({ params }) {
               <>
                 <h2 className="titulo">Tocá una publicación para ver todo</h2>
                 <p className="bajada">{publicaciones.length === 1 ? '1 publicación' : `${publicaciones.length} publicaciones`}</p>
-                <Vidriera productos={publicaciones} />
+                <Vidriera productos={publicaciones} plataformas={categoria.slug === 'motherboards'} />
               </>
             ) : (
               <div className="vacio">

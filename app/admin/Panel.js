@@ -5,7 +5,18 @@ import {
   CaretLeftIcon, CaretRightIcon, CurrencyDollarIcon, ImageIcon, ImagesIcon, PackageIcon, PencilSimpleIcon, ReceiptIcon, StarIcon, TrashIcon,
   UploadSimpleIcon, WhatsappLogoIcon
 } from '@phosphor-icons/react';
-import { escribirA, pesos } from '../../lib/contacto';
+import { escribirA, garantiaNuevos, garantiaOutlet, pesos } from '../../lib/contacto';
+
+// Elegir garantía: 4 o 12 meses. Si un producto viejo tiene otra, se muestra también para no perderla.
+function ElegirGarantia({ valor, cambiar }) {
+  const opciones = [garantiaOutlet, garantiaNuevos];
+  return (
+    <select value={valor} onChange={e => cambiar(e.target.value)} required>
+      {!opciones.includes(valor) && <option value={valor}>{valor}</option>}
+      {opciones.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
+  );
+}
 
 // Sube una imagen a Cloudinary con el permiso firmado de /api/subir y devuelve su dirección
 async function subirImagen(archivo, categoria, clave) {
@@ -124,7 +135,7 @@ export default function Panel({ categorias, garantiaBase }) {
   function abrirDatos(p) {
     setDatos(datos?.url === p.url ? null : {
       url: p.url, nombre: p.nombre, precio: String(p.precio), costo: p.costo == null ? '' : String(p.costo),
-      descripcion: p.descripcion || '', garantia: p.garantia, conCosto: 'costo' in p
+      descripcion: p.descripcion || '', garantia: (p.garantia || '').trim().replace(/\s+/g, ' ').toLowerCase(), conCosto: 'costo' in p
     });
   }
 
@@ -240,7 +251,7 @@ export default function Panel({ categorias, garantiaBase }) {
           <p className="nota">Ganancia: {pesos(Number(precio) - Number(costo))}</p>
         )}
         <label>Garantía
-          <input value={garantia} onChange={e => setGarantia(e.target.value)} maxLength={40} required />
+          <ElegirGarantia valor={garantia} cambiar={setGarantia} />
         </label>
         <label>Descripción
           <textarea value={descripcion} onChange={e => setDescripcion(e.target.value)} maxLength={5000} rows={10} placeholder="Estado, componentes, qué incluye" />
@@ -312,7 +323,7 @@ export default function Panel({ categorias, garantiaBase }) {
                       <p className="nota">Ganancia: {pesos(Number(datos.precio) - Number(datos.costo))}</p>
                     )}
                     <label>Garantía
-                      <input value={datos.garantia} onChange={e => setDatos(d => ({ ...d, garantia: e.target.value }))} maxLength={40} required />
+                      <ElegirGarantia valor={datos.garantia} cambiar={g => setDatos(d => ({ ...d, garantia: g }))} />
                     </label>
                     <label>Descripción
                       <textarea value={datos.descripcion} onChange={e => setDatos(d => ({ ...d, descripcion: e.target.value }))} maxLength={5000} rows={10} />

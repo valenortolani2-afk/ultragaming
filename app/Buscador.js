@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import Foto from './Foto';
 import { MagnifyingGlassIcon, XIcon } from '@phosphor-icons/react';
 import { pesos } from '../lib/contacto';
+import { categorias } from '../lib/categorias';
 
-// Botón "Buscar" de la barra. Abre una caja debajo de la barra con resultados mientras se escribe;
+// Botón "Buscar" de la barra. Abre una caja debajo de la barra con las categorías y, mientras se escribe, los resultados;
 // con Enter se va a /buscar con todos los resultados.
 export default function Buscador() {
   const [abierto, setAbierto] = useState(false);
@@ -58,6 +59,15 @@ export default function Buscador() {
               aria-label="Buscar productos y categorías" autoComplete="off" maxLength={80} autoFocus required />
             <button type="button" className="btn-icono" onClick={cerrar} aria-label="Cerrar buscador"><XIcon size={16} /></button>
           </form>
+
+          {!q.trim() && (
+            <div className="buscador-resultados">
+              <p className="buscador-titulo">Categorías</p>
+              <div className="filtros">
+                {categorias.map(c => <a key={c.slug} href={`/categoria/${c.slug}`} className="filtro">{c.nombre}</a>)}
+              </div>
+            </div>
+          )}
 
           {resultados && (
             <div className="buscador-resultados" aria-live="polite">

@@ -125,6 +125,7 @@ img { display: block; }
 .buscador-form input { flex: 1; min-width: 0; padding: 6px 0; background: none; border: none; outline: none; color: var(--texto); font: inherit; font-size: 16px; }
 .buscador-form input::-webkit-search-cancel-button { display: none; }
 .buscador-resultados { display: grid; gap: 12px; }
+.buscador-titulo { color: var(--gris); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
 .buscador-resultados .filtros { margin: 0; }
 .buscador-resultados ul { list-style: none; display: grid; gap: 4px; }
 .buscador-resultados li a { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 12px; transition: background-color 200ms var(--curva); }

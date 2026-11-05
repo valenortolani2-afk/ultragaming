@@ -88,7 +88,11 @@ img { display: block; }
 @keyframes cinta { to { transform: translateX(-50%); } }
 @media (max-width: 720px) { .cinta li { font-size: 14px; line-height: 20px; padding-right: 32px; } .cinta-pista { animation-duration: 22s; } }
 
-.franja { background: var(--azul-fondo); text-align: center; font-size: 14px; line-height: 20px; font-weight: 600; padding: 8px 16px; }
+.franja { background: var(--azul-fondo); font-size: 14px; line-height: 20px; font-weight: 600; padding: 8px 0; overflow: hidden; }
+.franja-pista { display: flex; width: max-content; animation: cinta 80s linear infinite; }
+.franja:hover .franja-pista { animation-play-state: paused; }
+.franja-pista span { display: inline-flex; align-items: center; gap: 8px; flex: none; padding-right: 48px; white-space: nowrap; }
+.franja-pista svg { flex: none; }
 .nav {
   position: fixed; top: 48px; left: 50%; z-index: 40; transform: translateX(-50%);
   display: flex; align-items: center; gap: 24px; padding: 8px 8px 8px 16px; border-radius: 16px;
@@ -493,6 +497,9 @@ img { display: block; }
   .cinta-pista { animation: none; width: auto; justify-content: center; }
   .cinta ul { flex-wrap: wrap; justify-content: center; row-gap: 8px; padding: 0 16px; }
   .cinta ul[aria-hidden] { display: none; }
+  .franja-pista { animation: none; width: auto; justify-content: center; }
+  .franja-pista span { padding-right: 0; }
+  .franja-pista span:not(:first-child) { display: none; }
 }
 
 /* Teléfono del comprador como link a WhatsApp */

@@ -21,6 +21,14 @@ const cinta = [
   { texto: 'Envíos a todo el país', clase: 'azul' }
 ].map(t => typeof t === 'string' ? { texto: t } : t);
 
+// Mensajes de la barra en movimiento de arriba de todo
+const franja = [
+  { icono: TruckIcon, texto: 'Envíos gratuitos en Mar del Plata' },
+  { icono: ShieldCheckIcon, texto: `${garantiaNuevos} de garantía en nuevos` },
+  { icono: ShieldCheckIcon, texto: `${garantiaOutlet} en outlet` },
+  { icono: TruckIcon, texto: 'Envíos a todo el país' }
+];
+
 const beneficios = [
   { icono: ShieldCheckIcon, titulo: `Hasta ${garantiaNuevos} de garantía`, texto: `${garantiaNuevos} en productos nuevos y ${garantiaOutlet} en outlet. Si algo falla, lo revisamos y te lo resolvemos.`, destacada: true },
   { icono: WrenchIcon, titulo: 'Servicio técnico propio', texto: 'Reparación, limpieza y actualización de tu PC en el local.' },
@@ -56,7 +64,14 @@ export default async function Inicio() {
   }
   return (
     <>
-      <div className="franja">{garantiaNuevos} de garantía en nuevos · {garantiaOutlet} en outlet · Envíos a todo el país</div>
+      {/* Los mensajes se repiten para llenar pantallas anchas y que el giro no tenga cortes; los lectores de pantalla leen solo la primera vuelta */}
+      <div className="franja">
+        <div className="franja-pista">
+          {Array.from({ length: 8 }, (_, vuelta) => franja.map(({ icono: Icono, texto }) => (
+            <span key={vuelta + texto} aria-hidden={vuelta > 0 || undefined}><Icono size={16} weight="fill" /> {texto}</span>
+          )))}
+        </div>
+      </div>
       <Nav />
 
       <main id="contenido">
